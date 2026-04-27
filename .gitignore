@@ -25,3 +25,5 @@ test-results
 
 supabase/.branches
 supabase/.temp
+.next/
+tsconfig.tsbuildinfo
