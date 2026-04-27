@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -v '\\\\.md$')",
+      "Bash(pnpm --version)",
+      "Bash(npm --version)",
+      "Bash(supabase --version)",
+      "Bash(docker --version)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(npm test *)",
+      "Bash(winget --version)",
+      "Bash(winget install *)"
+    ]
+  }
+}

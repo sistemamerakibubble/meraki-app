@@ -1,0 +1,117 @@
+import Link from 'next/link';
+import { ArrowDownLeft, ArrowUpRight } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { BillingStatusBadge } from '@/modules/financeiro/components/BillingStatusBadge';
+import { BillingRowActions } from '@/modules/financeiro/components/BillingRowActions';
+import { formatBRL } from '@/lib/utils/money';
+import { formatDate } from '@/lib/utils/dates';
+import { cn } from '@/lib/utils/cn';
+import { routes } from '@/lib/constants/routes';
+import type { Role } from '@/types/domain';
+import type { ListBillingsResult } from '@/modules/financeiro/queries/listBillings';
+
+export function BillingsTable({
+  result,
+  patients,
+  role,
+  query,
+}: {
+  result: ListBillingsResult;
+  patients: { id: string; fullName: string }[];
+  role: Role;
+  query: Record<string, string | undefined>;
+}) {
+  if (result.items.length === 0) {
+    return (
+      <div className="rounded-lg border bg-card p-12 text-center">
+        <h3 className="text-lg font-semibold">Nenhum lançamento encontrado</h3>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Ajuste os filtros ou crie um novo lançamento.
+        </p>
+      </div>
+    );
+  }
+
+  const hasPrev = result.page > 1;
+  const hasNext = result.hasMore;
+  const baseParams = new URLSearchParams();
+  for (const [k, v] of Object.entries(query)) if (v) baseParams.set(k, v);
+  const toPage = (p: number) => {
+    const params = new URLSearchParams(baseParams);
+    if (p > 1) params.set('page', String(p));
+    else params.delete('page');
+    return `${routes.financeiro}${params.toString() ? `?${params}` : ''}`;
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="overflow-hidden rounded-lg border bg-card">
+        <table className="w-full text-sm">
+          <thead className="border-b bg-muted/40 text-left text-xs uppercase text-muted-foreground">
+            <tr>
+              <th className="px-4 py-3">Descrição</th>
+              <th className="px-4 py-3">Paciente</th>
+              <th className="px-4 py-3">Vencimento</th>
+              <th className="px-4 py-3 text-right">Valor</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y">
+            {result.items.map((b) => (
+              <tr key={b.id}>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2 font-medium">
+                    {b.type === 'receita' ? (
+                      <ArrowDownLeft className="h-4 w-4 text-emerald-600" aria-hidden />
+                    ) : (
+                      <ArrowUpRight className="h-4 w-4 text-destructive" aria-hidden />
+                    )}
+                    {b.description}
+                  </div>
+                  {b.paymentMethod ? (
+                    <p className="text-xs text-muted-foreground">{b.paymentMethod}</p>
+                  ) : null}
+                </td>
+                <td className="px-4 py-3 text-muted-foreground">
+                  {b.patientName ?? '—'}
+                </td>
+                <td className="px-4 py-3 text-muted-foreground">{formatDate(b.dueDate)}</td>
+                <td
+                  className={cn(
+                    'px-4 py-3 text-right font-semibold tabular-nums',
+                    b.type === 'receita' ? 'text-emerald-600' : 'text-destructive',
+                  )}
+                >
+                  {b.type === 'despesa' ? '-' : ''}
+                  {formatBRL(b.amountCents)}
+                </td>
+                <td className="px-4 py-3">
+                  <BillingStatusBadge status={b.derivedStatus} />
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <BillingRowActions billing={b} patients={patients} role={role} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {(hasPrev || hasNext) && (
+        <div className="flex items-center justify-between pt-1">
+          <Button asChild variant="ghost" size="sm" disabled={!hasPrev}>
+            <Link href={hasPrev ? toPage(result.page - 1) : '#'}>Anterior</Link>
+          </Button>
+          <span className="text-xs text-muted-foreground">
+            Página {result.page} de {Math.max(1, Math.ceil(result.total / result.pageSize))}
+          </span>
+          <Button asChild variant="ghost" size="sm" disabled={!hasNext}>
+            <Link href={hasNext ? toPage(result.page + 1) : '#'}>Próximo</Link>
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
