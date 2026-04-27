@@ -4,10 +4,18 @@ import type {
   Billing,
   BillingDerivedStatus,
   ClinicalNote,
+  InventoryItem,
+  LibraryFile,
+  LibraryFolder,
   Patient,
+  PatientEvolution,
+  PatientNote,
   Professional,
   Profile,
+  Reminder,
   Room,
+  Supervision,
+  SupervisionMessage,
 } from '@/types/domain';
 
 type ProfileRow = Database['public']['Tables']['profiles']['Row'];
@@ -156,7 +164,7 @@ type InventoryItemRow = Database['public']['Tables']['inventory_items']['Row'];
 
 export function fromDbInventoryItem(
   row: InventoryItemRow,
-): import('@/types/domain').InventoryItem {
+): InventoryItem {
   return {
     id: row.id,
     orgId: row.org_id,
@@ -184,7 +192,7 @@ export function fromDbSupervision(
     professional?: Named | Named[];
     supervisor?: Named | Named[];
   },
-): import('@/types/domain').Supervision {
+): Supervision {
   return {
     id: row.id,
     orgId: row.org_id,
@@ -203,7 +211,7 @@ export function fromDbSupervision(
 
 export function fromDbSupervisionMessage(
   row: SupervisionMessageRow & { profiles?: Named | Named[] },
-): import('@/types/domain').SupervisionMessage {
+): SupervisionMessage {
   return {
     id: row.id,
     supervisionId: row.supervision_id,
@@ -217,7 +225,7 @@ export function fromDbSupervisionMessage(
 type LibraryFolderRow = Database['public']['Tables']['library_folders']['Row'];
 type LibraryFileRow = Database['public']['Tables']['library_files']['Row'];
 
-export function fromDbLibraryFolder(row: LibraryFolderRow): import('@/types/domain').LibraryFolder {
+export function fromDbLibraryFolder(row: LibraryFolderRow): LibraryFolder {
   return {
     id: row.id,
     orgId: row.org_id,
@@ -230,7 +238,7 @@ export function fromDbLibraryFolder(row: LibraryFolderRow): import('@/types/doma
 
 export function fromDbLibraryFile(
   row: LibraryFileRow & { profiles?: Named | Named[] },
-): import('@/types/domain').LibraryFile {
+): LibraryFile {
   return {
     id: row.id,
     orgId: row.org_id,
@@ -247,7 +255,7 @@ export function fromDbLibraryFile(
 
 type ReminderRow = Database['public']['Tables']['reminders']['Row'];
 
-export function fromDbReminder(row: ReminderRow): import('@/types/domain').Reminder {
+export function fromDbReminder(row: ReminderRow): Reminder {
   return {
     id: row.id,
     orgId: row.org_id,
@@ -264,7 +272,7 @@ type PatientNoteRow = Database['public']['Tables']['patient_notes']['Row'];
 
 export function fromDbPatientEvolution(
   row: PatientEvolutionRow & { profiles?: Named | Named[] },
-): import('@/types/domain').PatientEvolution {
+): PatientEvolution {
   return {
     id: row.id,
     patientId: row.patient_id,
@@ -280,7 +288,7 @@ export function fromDbPatientEvolution(
 
 export function fromDbPatientNote(
   row: PatientNoteRow & { profiles?: Named | Named[] },
-): import('@/types/domain').PatientNote {
+): PatientNote {
   return {
     id: row.id,
     patientId: row.patient_id,

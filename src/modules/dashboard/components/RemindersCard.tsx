@@ -79,7 +79,7 @@ export function RemindersCard({ reminders }: { reminders: Reminder[] }) {
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between">
-        <CardTitle className="text-base">Lembretes / Post-it's</CardTitle>
+        <CardTitle className="text-base">Lembretes / Post-it&apos;s</CardTitle>
         <Check className="h-4 w-4 text-muted-foreground" aria-hidden />
       </CardHeader>
       <CardContent>

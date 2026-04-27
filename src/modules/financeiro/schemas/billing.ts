@@ -2,8 +2,6 @@ import { z } from 'zod';
 import { BILLING_TYPES, BILLING_STATUSES } from '@/types/domain';
 import { zDate } from '@/lib/validation/zod-common';
 
-const uuid = z.string().uuid('ID inválido');
-
 const cents = z
   .union([z.string(), z.number()])
   .transform((v) => (typeof v === 'string' ? Number.parseInt(v, 10) : v))
