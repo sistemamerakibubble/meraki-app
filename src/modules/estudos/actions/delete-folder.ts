@@ -3,11 +3,15 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/guards';
+import { checkPermission } from '@/lib/auth/permissions.server';
 import { err, ok, type Result } from '@/lib/validation/action-result';
 import { routes } from '@/lib/constants/routes';
 
 export async function deleteFolderAction(id: string): Promise<Result<null, string>> {
   await requireUser();
+  if (!(await checkPermission('library.modify'))) {
+    return err('Sem permissão para excluir pastas.');
+  }
 
   const supabase = await createClient();
 

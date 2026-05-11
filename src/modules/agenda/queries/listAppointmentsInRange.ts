@@ -23,7 +23,7 @@ export async function listAppointmentsInRange({
   let query = supabase
     .from('appointments')
     .select(
-      'id, org_id, patient_id, professional_id, room_id, starts_at, ends_at, status, confirmed, notes, created_at, updated_at, patients(full_name), professionals(full_name), rooms(name)',
+      'id, org_id, patient_id, professional_id, room_id, starts_at, ends_at, status, confirmed, notes, recurrence_group_id, created_at, updated_at, patients(full_name), professionals(full_name), rooms(name)',
     )
     .gte('starts_at', start.toISOString())
     .lt('starts_at', end.toISOString())

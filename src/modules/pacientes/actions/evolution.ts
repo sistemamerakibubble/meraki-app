@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/guards';
+import { checkPermission } from '@/lib/auth/permissions.server';
 import { err, ok, type Result } from '@/lib/validation/action-result';
 import { parseFormData } from '@/lib/validation/parse-form-data';
 import { evolutionSchema } from '@/modules/pacientes/schemas/evolution';
@@ -17,8 +18,8 @@ export async function createEvolutionAction(
   formData: FormData,
 ): Promise<CreateEvolutionResult> {
   const session = await requireUser();
-  if (session.profile.role !== 'admin' && session.profile.role !== 'medico') {
-    return err({ formError: 'Apenas médicos e administradores podem registrar evoluções.' });
+  if (!(await checkPermission('patient_evolutions.modify'))) {
+    return err({ formError: 'Sem permissão para registrar evoluções.' });
   }
 
   const parsed = parseFormData(evolutionSchema, formData);
@@ -53,6 +54,9 @@ export async function updateEvolutionAction(
   formData: FormData,
 ): Promise<UpdateEvolutionResult> {
   await requireUser();
+  if (!(await checkPermission('patient_evolutions.modify'))) {
+    return err({ formError: 'Sem permissão para editar evoluções.' });
+  }
 
   const parsed = parseFormData(evolutionSchema, formData);
   if (!parsed.success) {
@@ -80,6 +84,9 @@ export async function deleteEvolutionAction(
   patientId: string,
 ): Promise<Result<null, string>> {
   await requireUser();
+  if (!(await checkPermission('patient_evolutions.modify'))) {
+    return err('Sem permissão para excluir evoluções.');
+  }
   const supabase = await createClient();
   const { error } = await supabase.from('patient_evolutions').delete().eq('id', id);
   if (error) return err('Não foi possível excluir.');

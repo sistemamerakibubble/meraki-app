@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/guards';
+import { checkPermission } from '@/lib/auth/permissions.server';
 import { err, ok, type Result } from '@/lib/validation/action-result';
 import { parseFormData } from '@/lib/validation/parse-form-data';
 import { appointmentSchema } from '@/modules/agenda/schemas/appointment';
@@ -28,6 +29,9 @@ export async function updateAppointmentAction(
   formData: FormData,
 ): Promise<UpdateAppointmentResult> {
   await requireUser();
+  if (!(await checkPermission('appointments.modify'))) {
+    return err({ formError: 'Sem permissão para editar agendamentos.' });
+  }
 
   const parsed = parseFormData(appointmentSchema, formData);
   if (!parsed.success) {

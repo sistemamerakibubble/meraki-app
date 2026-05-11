@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/guards';
+import { checkPermission } from '@/lib/auth/permissions.server';
 import { err, ok, type Result } from '@/lib/validation/action-result';
 import { parseFormData } from '@/lib/validation/parse-form-data';
 import { billingSchema } from '@/modules/financeiro/schemas/billing';
@@ -16,10 +17,10 @@ export async function updateBillingAction(
   _prev: UpdateBillingResult | null,
   formData: FormData,
 ): Promise<UpdateBillingResult> {
-  const session = await requireUser();
+  await requireUser();
 
-  if (session.profile.role !== 'admin' && session.profile.role !== 'recepcao') {
-    return err({ formError: 'Sem permissão para editar.' });
+  if (!(await checkPermission('financials.modify'))) {
+    return err({ formError: 'Sem permissão para editar lançamentos.' });
   }
 
   const parsed = parseFormData(billingSchema, formData);

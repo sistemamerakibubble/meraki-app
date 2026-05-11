@@ -1,5 +1,18 @@
-export const ROLES = ['admin', 'medico', 'supervisor', 'recepcao'] as const;
+export const ROLES = [
+  'admin',
+  'medico',
+  'psicoterapeuta',
+  'psicopedagoga',
+  'estagiario',
+  'atendente',
+  'supervisor',
+  'recepcao',
+] as const;
 export type Role = (typeof ROLES)[number];
+
+// Funções não-admin (úteis para gerenciar permissões — admin sempre tem tudo)
+export const NON_ADMIN_ROLES = ROLES.filter((r): r is Exclude<Role, 'admin'> => r !== 'admin');
+export type NonAdminRole = (typeof NON_ADMIN_ROLES)[number];
 
 export type OrgId = string;
 export type UserId = string;
@@ -93,6 +106,7 @@ export type Appointment = {
   status: AppointmentStatus;
   confirmed: boolean;
   notes: string | null;
+  recurrenceGroupId: string | null;
 };
 
 export const BILLING_TYPES = ['receita', 'despesa'] as const;

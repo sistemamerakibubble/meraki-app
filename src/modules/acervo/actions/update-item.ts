@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/guards';
+import { checkPermission } from '@/lib/auth/permissions.server';
 import { err, ok, type Result } from '@/lib/validation/action-result';
 import { parseFormData } from '@/lib/validation/parse-form-data';
 import { inventoryItemSchema } from '@/modules/acervo/schemas/inventory-item';
@@ -16,8 +17,8 @@ export async function updateItemAction(
   _prev: UpdateItemResult | null,
   formData: FormData,
 ): Promise<UpdateItemResult> {
-  const session = await requireUser();
-  if (session.profile.role !== 'admin' && session.profile.role !== 'recepcao') {
+  await requireUser();
+  if (!(await checkPermission('inventory.modify'))) {
     return err({ formError: 'Sem permissão para editar.' });
   }
 

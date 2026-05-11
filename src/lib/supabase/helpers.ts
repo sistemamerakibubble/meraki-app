@@ -122,6 +122,7 @@ export function fromDbAppointment(
     status: row.status,
     confirmed: row.confirmed,
     notes: row.notes,
+    recurrenceGroupId: row.recurrence_group_id,
   };
 }
 

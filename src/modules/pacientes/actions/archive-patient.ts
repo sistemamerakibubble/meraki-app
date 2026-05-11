@@ -3,11 +3,15 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/guards';
+import { checkPermission } from '@/lib/auth/permissions.server';
 import { err, ok, type Result } from '@/lib/validation/action-result';
 import { routes } from '@/lib/constants/routes';
 
 export async function archivePatientAction(id: string): Promise<Result<null, string>> {
   await requireUser();
+  if (!(await checkPermission('patients.archive'))) {
+    return err('Sem permissão para arquivar pacientes.');
+  }
 
   const supabase = await createClient();
   const { error } = await supabase
@@ -28,6 +32,9 @@ export async function togglePatientActiveAction(
   next: boolean,
 ): Promise<Result<null, string>> {
   await requireUser();
+  if (!(await checkPermission('patients.update'))) {
+    return err('Sem permissão para alterar o paciente.');
+  }
 
   const supabase = await createClient();
   const { error } = await supabase

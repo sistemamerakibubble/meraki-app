@@ -1,8 +1,13 @@
 import type { ReactNode } from 'react';
 import { requireUser } from '@/lib/auth/guards';
+import { getCurrentPermissions } from '@/lib/auth/permissions.server';
 import { AppShell } from '@/components/layout/AppShell';
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
-  const user = await requireUser();
-  return <AppShell user={user}>{children}</AppShell>;
+  const [user, permissions] = await Promise.all([requireUser(), getCurrentPermissions()]);
+  return (
+    <AppShell user={user} permissions={permissions}>
+      {children}
+    </AppShell>
+  );
 }

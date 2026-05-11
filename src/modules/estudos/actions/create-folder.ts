@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/guards';
+import { checkPermission } from '@/lib/auth/permissions.server';
 import { err, ok, type Result } from '@/lib/validation/action-result';
 import { parseFormData } from '@/lib/validation/parse-form-data';
 import { folderSchema } from '@/modules/estudos/schemas/folder';
@@ -16,6 +17,9 @@ export async function createFolderAction(
   formData: FormData,
 ): Promise<CreateFolderResult> {
   const session = await requireUser();
+  if (!(await checkPermission('library.modify'))) {
+    return err({ formError: 'Sem permissão para criar pastas.' });
+  }
 
   const parsed = parseFormData(folderSchema, formData);
   if (!parsed.success) {

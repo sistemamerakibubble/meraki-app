@@ -3,6 +3,11 @@ import { APPOINTMENT_STATUSES } from '@/types/domain';
 
 const uuid = z.string().uuid('ID inválido');
 
+const truthy = z.union([z.literal('on'), z.literal('true'), z.boolean()]);
+
+export const RECURRENCE_UNITS = ['day', 'week', 'month'] as const;
+export type RecurrenceUnit = (typeof RECURRENCE_UNITS)[number];
+
 export const appointmentSchema = z
   .object({
     patientId: uuid,
@@ -19,6 +24,28 @@ export const appointmentSchema = z
       .min(1, 'Início é obrigatório'),
     endsAt: z.string({ required_error: 'Término é obrigatório' }).min(1, 'Término é obrigatório'),
     notes: z.string().max(2000, 'Máximo 2000 caracteres').optional().default(''),
+    recurring: truthy
+      .optional()
+      .transform((v) => v === true || v === 'on' || v === 'true'),
+    repeatEvery: z
+      .union([z.string(), z.number()])
+      .optional()
+      .transform((v) => {
+        if (v === undefined || v === '') return 1;
+        const n = typeof v === 'string' ? Number.parseInt(v, 10) : v;
+        return Number.isFinite(n) ? n : 1;
+      })
+      .pipe(z.number().int().min(1, 'Mínimo 1').max(52, 'Máximo 52')),
+    repeatUnit: z.enum(RECURRENCE_UNITS).optional().default('week'),
+    occurrences: z
+      .union([z.string(), z.number()])
+      .optional()
+      .transform((v) => {
+        if (v === undefined || v === '') return 8;
+        const n = typeof v === 'string' ? Number.parseInt(v, 10) : v;
+        return Number.isFinite(n) ? n : 8;
+      })
+      .pipe(z.number().int().min(1, 'Mínimo 1').max(104, 'Máximo 104')),
   })
   .refine((data) => new Date(data.endsAt) > new Date(data.startsAt), {
     path: ['endsAt'],

@@ -27,3 +27,5 @@ supabase/.branches
 supabase/.temp
 .next/
 tsconfig.tsbuildinfo
+
+.vercel
