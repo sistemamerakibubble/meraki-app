@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/guards';
+import { checkPermission } from '@/lib/auth/permissions.server';
 import { err, ok, type Result } from '@/lib/validation/action-result';
 import { UPLOAD_MAX_BYTES } from '@/lib/constants/limits';
 import { buildStoragePath } from '@/modules/estudos/utils/buildStoragePath';
@@ -18,6 +19,9 @@ function parseFolderId(raw: string | null): string | null {
 
 export async function uploadFileAction(formData: FormData): Promise<UploadFileResult> {
   const session = await requireUser();
+  if (!(await checkPermission('library.modify'))) {
+    return err('Sem permissão para enviar arquivos.');
+  }
 
   const file = formData.get('file');
   const folderId = parseFolderId(formData.get('folderId')?.toString() ?? null);

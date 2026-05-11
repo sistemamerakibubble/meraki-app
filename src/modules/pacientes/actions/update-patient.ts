@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/guards';
+import { checkPermission } from '@/lib/auth/permissions.server';
 import { err, ok, type Result } from '@/lib/validation/action-result';
 import { parseFormData } from '@/lib/validation/parse-form-data';
 import { patientSchema } from '@/modules/pacientes/schemas/patient';
@@ -19,6 +20,9 @@ export async function updatePatientAction(
   formData: FormData,
 ): Promise<UpdatePatientResult> {
   await requireUser();
+  if (!(await checkPermission('patients.update'))) {
+    return err({ formError: 'Sem permissão para editar pacientes.' });
+  }
 
   const parsed = parseFormData(patientSchema, formData);
   if (!parsed.success) {

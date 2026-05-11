@@ -15,25 +15,41 @@ import {
 } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils/cn';
 import { routes } from '@/lib/constants/routes';
+import type { Permission, PermissionMap } from '@/lib/auth/permissions';
 import type { Role } from '@/types/domain';
 
-type NavItem = { href: string; label: string; roles?: readonly Role[] };
+type NavItem = {
+  href: string;
+  label: string;
+  permission?: Permission;
+  roles?: readonly Role[];
+};
 
 const NAV: readonly NavItem[] = [
-  { href: routes.dashboard, label: 'Dashboard' },
-  { href: routes.agenda, label: 'Agenda' },
-  { href: routes.pacientes, label: 'Pacientes' },
-  { href: routes.financeiro, label: 'Financeiro' },
-  { href: routes.acervo, label: 'Acervo Técnico' },
+  { href: routes.dashboard, label: 'Dashboard', permission: 'dashboard.view' },
+  { href: routes.agenda, label: 'Agenda', permission: 'appointments.view' },
+  { href: routes.pacientes, label: 'Pacientes', permission: 'patients.view' },
+  { href: routes.financeiro, label: 'Financeiro', permission: 'financials.view' },
+  { href: routes.acervo, label: 'Acervo Técnico', permission: 'inventory.view' },
   { href: routes.supervisao, label: 'Supervisão' },
-  { href: routes.estudos, label: 'Estudos' },
+  { href: routes.estudos, label: 'Estudos', permission: 'library.view' },
   { href: routes.configuracoes, label: 'Configurações', roles: ['admin'] as const },
 ];
 
-export function MobileNav({ role }: { role: Role }) {
+export function MobileNav({
+  role,
+  permissions,
+}: {
+  role: Role;
+  permissions: PermissionMap;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const items = NAV.filter((item) => !item.roles || item.roles.includes(role));
+  const items = NAV.filter((item) => {
+    if (item.roles && !item.roles.includes(role)) return false;
+    if (item.permission && !permissions[item.permission]) return false;
+    return true;
+  });
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>

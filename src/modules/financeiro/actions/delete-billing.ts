@@ -3,13 +3,14 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/guards';
+import { checkPermission } from '@/lib/auth/permissions.server';
 import { err, ok, type Result } from '@/lib/validation/action-result';
 import { routes } from '@/lib/constants/routes';
 
 export async function deleteBillingAction(id: string): Promise<Result<null, string>> {
-  const session = await requireUser();
-  if (session.profile.role !== 'admin') {
-    return err('Apenas admin pode excluir lançamentos.');
+  await requireUser();
+  if (!(await checkPermission('financials.delete'))) {
+    return err('Sem permissão para excluir lançamentos.');
   }
 
   const supabase = await createClient();

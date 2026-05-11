@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/guards';
+import { checkPermission } from '@/lib/auth/permissions.server';
 import { err, ok, type Result } from '@/lib/validation/action-result';
 import { supervisionStatusSchema } from '@/modules/supervisao/schemas/supervision';
 import { routes } from '@/lib/constants/routes';
@@ -29,18 +30,18 @@ export async function changeSupervisionStatusAction(
   const isProfessional = current.professional_id === session.id;
   const isSupervisor = current.supervisor_id === session.id;
   const isAdmin = session.profile.role === 'admin';
+  const canReview = await checkPermission('supervisions.review');
 
-  // Regras de transição:
-  // - concluida: só supervisor ou admin
-  // - em_revisao: só supervisor ou admin
-  // - cancelada: solicitante ou admin
-  // - pendente: reabertura pelo supervisor ou admin
   if (parsed.data === 'concluida' || parsed.data === 'em_revisao') {
-    if (!isSupervisor && !isAdmin) return err('Apenas o supervisor pode alterar para este status.');
+    if (!isAdmin && !(isSupervisor && canReview)) {
+      return err('Apenas o supervisor designado pode alterar para este status.');
+    }
   } else if (parsed.data === 'cancelada') {
     if (!isProfessional && !isAdmin) return err('Apenas o solicitante pode cancelar.');
   } else if (parsed.data === 'pendente') {
-    if (!isSupervisor && !isAdmin) return err('Apenas o supervisor pode reabrir.');
+    if (!isAdmin && !(isSupervisor && canReview)) {
+      return err('Apenas o supervisor pode reabrir.');
+    }
   }
 
   const { error } = await supabase

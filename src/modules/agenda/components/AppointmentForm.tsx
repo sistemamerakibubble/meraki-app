@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -61,7 +62,6 @@ type Props = {
 };
 
 function toLocalInput(d: Date): string {
-  // datetime-local expects "YYYY-MM-DDTHH:mm" in local time.
   const offsetMs = d.getTimezoneOffset() * 60_000;
   return new Date(d.getTime() - offsetMs).toISOString().slice(0, 16);
 }
@@ -75,6 +75,10 @@ function defaultValues(mode: Mode): AppointmentInput {
       startsAt: toLocalInput(new Date(mode.appointment.startsAt)),
       endsAt: toLocalInput(new Date(mode.appointment.endsAt)),
       notes: mode.appointment.notes ?? '',
+      recurring: false,
+      repeatEvery: 1,
+      repeatUnit: 'week',
+      occurrences: 8,
     };
   }
   const base = mode.defaultDate ?? new Date();
@@ -89,6 +93,10 @@ function defaultValues(mode: Mode): AppointmentInput {
     startsAt: toLocalInput(start),
     endsAt: toLocalInput(end),
     notes: '',
+    recurring: false,
+    repeatEvery: 1,
+    repeatUnit: 'week',
+    occurrences: 8,
   };
 }
 
@@ -119,12 +127,11 @@ export function AppointmentForm({
   }, [open, mode, form]);
 
   const isEdit = mode.kind === 'edit';
-  const action = isEdit
-    ? (prev: UpdateAppointmentResult | null, fd: FormData) =>
-        updateAppointmentAction(mode.appointment.id, prev, fd)
-    : createAppointmentAction;
-
   type CombinedResult = CreateAppointmentResult | UpdateAppointmentResult;
+  const action: (prev: CombinedResult | null, fd: FormData) => Promise<CombinedResult> = isEdit
+    ? (prev, fd) => updateAppointmentAction(mode.appointment.id, prev, fd)
+    : (prev, fd) => createAppointmentAction(prev as CreateAppointmentResult | null, fd);
+
   const [state, formAction, pending] = useActionState<CombinedResult | null, FormData>(
     action,
     null,
@@ -132,7 +139,16 @@ export function AppointmentForm({
 
   useEffect(() => {
     if (state?.ok) {
-      toast.success(isEdit ? 'Agendamento atualizado.' : 'Agendamento criado.');
+      const data = state.data as { id: string; createdCount?: number; skippedCount?: number };
+      const created = data.createdCount ?? 1;
+      const skipped = data.skippedCount ?? 0;
+      if (created > 1) {
+        const baseMsg = `${created} agendamentos criados.`;
+        const tail = skipped > 0 ? ` ${skipped} ignorado(s) por conflito.` : '';
+        toast.success(baseMsg + tail);
+      } else {
+        toast.success(isEdit ? 'Agendamento atualizado.' : 'Agendamento criado.');
+      }
       setOpen(false);
       onSuccess?.(state.data.id);
     }
@@ -146,13 +162,21 @@ export function AppointmentForm({
     fd.set('startsAt', new Date(data.startsAt).toISOString());
     fd.set('endsAt', new Date(data.endsAt).toISOString());
     if (data.notes) fd.set('notes', data.notes);
+    if (!isEdit && data.recurring) {
+      fd.set('recurring', 'on');
+      fd.set('repeatEvery', String(data.repeatEvery));
+      fd.set('repeatUnit', data.repeatUnit);
+      fd.set('occurrences', String(data.occurrences));
+    }
     startTransition(() => formAction(fd));
   });
+
+  const recurring = form.watch('recurring');
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {trigger ? <DialogTrigger asChild>{trigger}</DialogTrigger> : null}
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Editar agendamento' : 'Novo agendamento'}</DialogTitle>
         </DialogHeader>
@@ -291,6 +315,103 @@ export function AppointmentForm({
                 </FormItem>
               )}
             />
+
+            {!isEdit ? (
+              <div className="rounded-md border bg-muted/30 p-4">
+                <FormField
+                  control={form.control}
+                  name="recurring"
+                  render={({ field }) => (
+                    <FormItem className="flex items-start space-y-0 gap-2">
+                      <FormControl>
+                        <Checkbox
+                          checked={!!field.value}
+                          onCheckedChange={field.onChange}
+                          aria-label="Agendamento recorrente"
+                        />
+                      </FormControl>
+                      <div>
+                        <FormLabel className="cursor-pointer font-medium">
+                          Agendamento recorrente
+                        </FormLabel>
+                        <p className="text-xs text-muted-foreground">
+                          Cria múltiplos agendamentos no mesmo horário, espaçados conforme abaixo.
+                        </p>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+
+                {recurring ? (
+                  <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                    <FormField
+                      control={form.control}
+                      name="repeatEvery"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Repetir a cada</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min={1}
+                              max={52}
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(Number.parseInt(e.target.value, 10) || 1)
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="repeatUnit"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Unidade</FormLabel>
+                          <Select value={field.value} onValueChange={field.onChange}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="day">Dia(s)</SelectItem>
+                              <SelectItem value="week">Semana(s)</SelectItem>
+                              <SelectItem value="month">Mês(es)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="occurrences"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Quantidade de sessões</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min={1}
+                              max={104}
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(Number.parseInt(e.target.value, 10) || 1)
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
 
             {state && !state.ok && state.error.formError ? (
               <p role="alert" className="text-sm font-medium text-destructive">

@@ -20,6 +20,7 @@ function base(overrides: Partial<Appointment>): Appointment {
     status: 'agendado',
     confirmed: false,
     notes: null,
+    recurrenceGroupId: null,
     ...overrides,
   };
 }

@@ -19,6 +19,7 @@ export type Database = {
           org_id: string
           patient_id: string
           professional_id: string
+          recurrence_group_id: string | null
           room_id: string | null
           starts_at: string
           status: Database["public"]["Enums"]["appointment_status"]
@@ -33,6 +34,7 @@ export type Database = {
           org_id: string
           patient_id: string
           professional_id: string
+          recurrence_group_id?: string | null
           room_id?: string | null
           starts_at: string
           status?: Database["public"]["Enums"]["appointment_status"]
@@ -47,6 +49,7 @@ export type Database = {
           org_id?: string
           patient_id?: string
           professional_id?: string
+          recurrence_group_id?: string | null
           room_id?: string | null
           starts_at?: string
           status?: Database["public"]["Enums"]["appointment_status"]
@@ -643,6 +646,38 @@ export type Database = {
           },
         ]
       }
+      role_permissions: {
+        Row: {
+          granted: boolean
+          org_id: string
+          permission_key: string
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at: string
+        }
+        Insert: {
+          granted?: boolean
+          org_id: string
+          permission_key: string
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+        }
+        Update: {
+          granted?: boolean
+          org_id?: string
+          permission_key?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rooms: {
         Row: {
           active: boolean
@@ -791,9 +826,17 @@ export type Database = {
     }
     Functions: {
       current_org_id: { Args: never; Returns: string }
+      current_user_has_permission: { Args: { p_key: string }; Returns: boolean }
       current_user_role: {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
+      }
+      has_permission_for: {
+        Args: {
+          p_key: string
+          p_role: Database["public"]["Enums"]["user_role"]
+        }
+        Returns: boolean
       }
       immutable_unaccent: { Args: { "": string }; Returns: string }
       unaccent: { Args: { "": string }; Returns: string }
@@ -808,7 +851,15 @@ export type Database = {
       billing_status: "pendente" | "pago" | "cancelado"
       billing_type: "receita" | "despesa"
       supervision_status: "pendente" | "em_revisao" | "concluida" | "cancelada"
-      user_role: "admin" | "medico" | "supervisor" | "recepcao"
+      user_role:
+        | "admin"
+        | "medico"
+        | "supervisor"
+        | "recepcao"
+        | "psicoterapeuta"
+        | "psicopedagoga"
+        | "estagiario"
+        | "atendente"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1491,7 +1542,16 @@ export const Constants = {
       billing_status: ["pendente", "pago", "cancelado"],
       billing_type: ["receita", "despesa"],
       supervision_status: ["pendente", "em_revisao", "concluida", "cancelada"],
-      user_role: ["admin", "medico", "supervisor", "recepcao"],
+      user_role: [
+        "admin",
+        "medico",
+        "supervisor",
+        "recepcao",
+        "psicoterapeuta",
+        "psicopedagoga",
+        "estagiario",
+        "atendente",
+      ],
     },
   },
   storage: {

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/guards';
+import { checkPermission } from '@/lib/auth/permissions.server';
 import { err, ok, type Result } from '@/lib/validation/action-result';
 import { parseFormData } from '@/lib/validation/parse-form-data';
 import { supervisionSchema } from '@/modules/supervisao/schemas/supervision';
@@ -16,6 +17,9 @@ export async function createSupervisionAction(
   formData: FormData,
 ): Promise<CreateSupervisionResult> {
   const session = await requireUser();
+  if (!(await checkPermission('supervisions.create'))) {
+    return err({ formError: 'Sem permissão para criar supervisão.' });
+  }
 
   const parsed = parseFormData(supervisionSchema, formData);
   if (!parsed.success) {

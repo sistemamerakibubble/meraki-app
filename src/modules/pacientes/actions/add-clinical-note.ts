@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { requireUser } from '@/lib/auth/guards';
+import { checkPermission } from '@/lib/auth/permissions.server';
 import { err, ok, type Result } from '@/lib/validation/action-result';
 import { parseFormData } from '@/lib/validation/parse-form-data';
 import { clinicalNoteSchema } from '@/modules/pacientes/schemas/clinical-note';
@@ -24,8 +25,8 @@ export async function addClinicalNoteAction(
     return err({ fieldErrors: parsed.error.flatten().fieldErrors });
   }
 
-  if (session.profile.role !== 'admin' && session.profile.role !== 'medico') {
-    return err({ formError: 'Apenas médicos e administradores podem adicionar anotações.' });
+  if (!(await checkPermission('clinical_notes.create'))) {
+    return err({ formError: 'Sem permissão para registrar sessões clínicas.' });
   }
 
   const supabase = await createClient();
