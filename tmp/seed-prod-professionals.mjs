@@ -8,7 +8,14 @@ const admin = createClient(SUPABASE_URL, SERVICE_ROLE, {
 });
 
 // 1. Backfill: para cada profile com role clínica que ainda não tem entrada em professionals, criar uma.
-const CLINICAL_ROLES = ['medico', 'psicoterapeuta', 'psicopedagoga', 'estagiario', 'supervisor'];
+const CLINICAL_ROLES = [
+  'admin',
+  'medico',
+  'psicoterapeuta',
+  'psicopedagoga',
+  'estagiario',
+  'supervisor',
+];
 
 async function backfillProfessionals() {
   const { data: profiles, error } = await admin
