@@ -7,6 +7,7 @@ import { err, ok, type Result } from '@/lib/validation/action-result';
 import { parseFormData } from '@/lib/validation/parse-form-data';
 import { inviteUserSchema } from '@/modules/configuracoes/schemas/invite-user';
 import { routes } from '@/lib/constants/routes';
+import type { Role } from '@/types/domain';
 
 type FormError = { formError?: string; fieldErrors?: Record<string, string[]> };
 export type InviteUserResult = Result<
@@ -14,12 +15,37 @@ export type InviteUserResult = Result<
   FormError
 >;
 
+const CLINICAL_ROLES: readonly Role[] = [
+  'medico',
+  'psicoterapeuta',
+  'psicopedagoga',
+  'estagiario',
+  'supervisor',
+];
+
 function generateTempPassword(): string {
   const bytes = new Uint8Array(9);
   crypto.getRandomValues(bytes);
   return Array.from(bytes, (b) => b.toString(36).padStart(2, '0'))
     .join('')
     .slice(0, 12);
+}
+
+function specialtyFor(role: Role): string | null {
+  switch (role) {
+    case 'medico':
+      return 'Clínica Geral';
+    case 'psicoterapeuta':
+      return 'Psicoterapia';
+    case 'psicopedagoga':
+      return 'Psicopedagogia';
+    case 'estagiario':
+      return 'Estágio';
+    case 'supervisor':
+      return 'Supervisão clínica';
+    default:
+      return null;
+  }
 }
 
 export async function inviteUserAction(
@@ -73,7 +99,23 @@ export async function inviteUserAction(
     return err({ formError: 'Não foi possível criar o perfil do usuário.' });
   }
 
+  if (CLINICAL_ROLES.includes(parsed.data.role)) {
+    const { error: profErr } = await admin.from('professionals').insert({
+      org_id: session.profile.orgId,
+      profile_id: created.user.id,
+      full_name: parsed.data.fullName,
+      specialty: specialtyFor(parsed.data.role),
+      active: true,
+    });
+    if (profErr) {
+      // Não derruba o usuário — só loga. O admin pode criar o professional manualmente
+      // ou usar o script de backfill. Mas isso é raro.
+      console.error('Falha criando professional para novo usuário:', profErr.message);
+    }
+  }
+
   revalidatePath(routes.configuracoes);
+  revalidatePath(routes.agenda);
   return ok({
     id: created.user.id,
     email: parsed.data.email,
