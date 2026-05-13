@@ -16,6 +16,7 @@ export type InviteUserResult = Result<
 >;
 
 const CLINICAL_ROLES: readonly Role[] = [
+  'admin',
   'medico',
   'psicoterapeuta',
   'psicopedagoga',
@@ -33,6 +34,8 @@ function generateTempPassword(): string {
 
 function specialtyFor(role: Role): string | null {
   switch (role) {
+    case 'admin':
+      return null;
     case 'medico':
       return 'Clínica Geral';
     case 'psicoterapeuta':
