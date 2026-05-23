@@ -29,3 +29,6 @@ supabase/.temp
 tsconfig.tsbuildinfo
 
 .vercel
+
+# scripts locais / de seed — podem conter segredos, nunca versionar
+tmp/
