@@ -459,44 +459,74 @@ export type Database = {
       patients: {
         Row: {
           active: boolean
+          address: string | null
+          best_session_period: string | null
           birthdate: string | null
+          birthplace: string | null
+          care_type: string | null
           created_at: string
           deleted_at: string | null
+          diagnosis: string | null
           document: string | null
           email: string | null
           full_name: string
+          had_neuropsych_evaluation: boolean | null
           id: string
+          lives_with: string | null
+          main_complaints: string | null
+          nationality: string | null
           notes: string | null
           org_id: string
           phone: string | null
+          rg: string | null
           updated_at: string
         }
         Insert: {
           active?: boolean
+          address?: string | null
+          best_session_period?: string | null
           birthdate?: string | null
+          birthplace?: string | null
+          care_type?: string | null
           created_at?: string
           deleted_at?: string | null
+          diagnosis?: string | null
           document?: string | null
           email?: string | null
           full_name: string
+          had_neuropsych_evaluation?: boolean | null
           id?: string
+          lives_with?: string | null
+          main_complaints?: string | null
+          nationality?: string | null
           notes?: string | null
           org_id: string
           phone?: string | null
+          rg?: string | null
           updated_at?: string
         }
         Update: {
           active?: boolean
+          address?: string | null
+          best_session_period?: string | null
           birthdate?: string | null
+          birthplace?: string | null
+          care_type?: string | null
           created_at?: string
           deleted_at?: string | null
+          diagnosis?: string | null
           document?: string | null
           email?: string | null
           full_name?: string
+          had_neuropsych_evaluation?: boolean | null
           id?: string
+          lives_with?: string | null
+          main_complaints?: string | null
+          nationality?: string | null
           notes?: string | null
           org_id?: string
           phone?: string | null
+          rg?: string | null
           updated_at?: string
         }
         Relationships: [

@@ -49,6 +49,16 @@ export type Patient = {
   phone: string | null;
   email: string | null;
   document: string | null;
+  rg: string | null;
+  nationality: string | null;
+  birthplace: string | null;
+  address: string | null;
+  livesWith: string | null;
+  mainComplaints: string | null;
+  hadNeuropsychEvaluation: boolean | null;
+  diagnosis: string | null;
+  bestSessionPeriod: string | null;
+  careType: string | null;
   notes: string | null;
   active: boolean;
   createdAt: string;

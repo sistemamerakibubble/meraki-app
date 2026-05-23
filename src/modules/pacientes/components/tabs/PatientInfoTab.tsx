@@ -1,4 +1,14 @@
-import { Mail, Phone, Calendar, FileBadge, Archive } from 'lucide-react';
+import {
+  Mail,
+  Phone,
+  Calendar,
+  FileBadge,
+  Archive,
+  MapPin,
+  Globe,
+  Home,
+  Users,
+} from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,14 +25,27 @@ function formatCPF(digits: string | null | undefined): string {
   return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
 }
 
+function neuroLabel(v: boolean | null): string {
+  if (v === true) return 'Sim';
+  if (v === false) return 'Não';
+  return '—';
+}
+
 export function PatientInfoTab({ patient }: { patient: Patient }) {
+  const hasAnamnesis =
+    patient.mainComplaints ||
+    patient.hadNeuropsychEvaluation !== null ||
+    patient.diagnosis ||
+    patient.bestSessionPeriod ||
+    patient.careType;
+
   return (
     <Card>
       <CardHeader className="flex-row items-start justify-between gap-4">
         <div>
           <CardTitle className="text-lg">Informações do paciente</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Cadastro básico, contato e observações.
+            Dados pessoais, contato e anamnese inicial.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -34,6 +57,9 @@ export function PatientInfoTab({ patient }: { patient: Patient }) {
         </div>
       </CardHeader>
       <CardContent>
+        <p className="mb-3 text-xs font-semibold uppercase text-muted-foreground">
+          Dados pessoais
+        </p>
         <dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
           <Field label="Nome completo">
             <span className="font-medium">{patient.fullName}</span>
@@ -55,13 +81,67 @@ export function PatientInfoTab({ patient }: { patient: Patient }) {
           <Field label="CPF" icon={FileBadge}>
             {formatCPF(patient.document)}
           </Field>
+          <Field label="RG" icon={FileBadge}>
+            {patient.rg ?? '—'}
+          </Field>
+          <Field label="Nacionalidade" icon={Globe}>
+            {patient.nationality ?? '—'}
+          </Field>
+          <Field label="Naturalidade" icon={MapPin}>
+            {patient.birthplace ?? '—'}
+          </Field>
+          <Field label="Com quem reside?" icon={Users}>
+            {patient.livesWith ?? '—'}
+          </Field>
           <Field label="Telefone" icon={Phone}>
             {patient.phone ? formatPhone(patient.phone) : '—'}
           </Field>
           <Field label="E-mail" icon={Mail}>
             {patient.email ?? '—'}
           </Field>
+          <div className="sm:col-span-2">
+            <Field label="Endereço" icon={Home}>
+              {patient.address ?? '—'}
+            </Field>
+          </div>
         </dl>
+
+        {hasAnamnesis ? (
+          <>
+            <p className="mb-3 mt-8 text-xs font-semibold uppercase text-muted-foreground">
+              Anamnese inicial
+            </p>
+            <dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+              <Field label="Avaliação neuropsicológica prévia">
+                {neuroLabel(patient.hadNeuropsychEvaluation)}
+              </Field>
+              <Field label="Melhor período para sessões">
+                {patient.bestSessionPeriod ?? '—'}
+              </Field>
+              <Field label="Tipo de atendimento">
+                {patient.careType ?? '—'}
+              </Field>
+            </dl>
+
+            {patient.mainComplaints ? (
+              <div className="mt-4">
+                <p className="text-xs uppercase text-muted-foreground">Principais queixas</p>
+                <p className="mt-1 whitespace-pre-wrap rounded-md border bg-muted/30 p-3 text-sm">
+                  {patient.mainComplaints}
+                </p>
+              </div>
+            ) : null}
+
+            {patient.diagnosis ? (
+              <div className="mt-4">
+                <p className="text-xs uppercase text-muted-foreground">Diagnóstico</p>
+                <p className="mt-1 whitespace-pre-wrap rounded-md border bg-muted/30 p-3 text-sm">
+                  {patient.diagnosis}
+                </p>
+              </div>
+            ) : null}
+          </>
+        ) : null}
 
         {patient.notes ? (
           <div className="mt-6">

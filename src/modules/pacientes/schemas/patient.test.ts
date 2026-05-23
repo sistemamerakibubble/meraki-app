@@ -56,4 +56,41 @@ describe('patientSchema', () => {
     const r = patientSchema.safeParse({ fullName: 'X', document: '111.111.111-11' });
     expect(r.success).toBe(false);
   });
+
+  it('aceita campos de anamnese opcionais', () => {
+    const r = patientSchema.parse({
+      fullName: 'X',
+      rg: '12.345.678-9',
+      nationality: 'Brasileira',
+      birthplace: 'São Paulo - SP',
+      address: 'Rua A, 123, 01000-000',
+      livesWith: 'Pais',
+      mainComplaints: 'Dificuldade de atenção',
+      hadNeuropsychEvaluation: 'sim',
+      diagnosis: 'TDAH',
+      bestSessionPeriod: 'Tarde',
+      careType: 'Online',
+    });
+    expect(r.rg).toBe('12.345.678-9');
+    expect(r.hadNeuropsychEvaluation).toBe('sim');
+    expect(r.bestSessionPeriod).toBe('Tarde');
+    expect(r.careType).toBe('Online');
+  });
+
+  it('rejeita período/tipo fora das opções', () => {
+    expect(
+      patientSchema.safeParse({ fullName: 'X', bestSessionPeriod: 'Madrugada' }).success,
+    ).toBe(false);
+    expect(patientSchema.safeParse({ fullName: 'X', careType: 'Telepatia' }).success).toBe(
+      false,
+    );
+  });
+
+  it('anamnese vazia mantém defaults', () => {
+    const r = patientSchema.parse({ fullName: 'X' });
+    expect(r.hadNeuropsychEvaluation).toBe('');
+    expect(r.bestSessionPeriod).toBe('');
+    expect(r.careType).toBe('');
+    expect(r.rg).toBe('');
+  });
 });
