@@ -34,7 +34,7 @@ Detalhes em [docs/stack.md](./docs/stack.md).
 ## Estrutura do repositório
 
 ```
-meraki/
+meraki-99freelas/
 ├── docs/                 Documentação de arquitetura e decisões
 ├── src/
 │   ├── app/              App Router (rotas, layouts, pages)
