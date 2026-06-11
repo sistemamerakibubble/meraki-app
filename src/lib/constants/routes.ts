@@ -1,0 +1,15 @@
+export const routes = {
+  login: '/login',
+  forgotPassword: '/esqueci-senha',
+  resetPassword: '/redefinir-senha',
+  dashboard: '/dashboard',
+  agenda: '/agenda',
+  pacientes: '/pacientes',
+  patient: (id: string) => `/pacientes/${id}`,
+  financeiro: '/financeiro',
+  acervo: '/acervo',
+  supervisao: '/supervisao',
+  estudos: '/estudos',
+  folder: (id: string) => `/estudos/pasta/${id}`,
+  configuracoes: '/configuracoes',
+} as const;
