@@ -175,6 +175,7 @@ export function fromDbBilling(
     nfStatus: row.nf_status,
     nfNumber: row.nf_number,
     nfIssuedAt: row.nf_issued_at,
+    chargeSentAt: (row as typeof row & { charge_sent_at?: string | null }).charge_sent_at ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

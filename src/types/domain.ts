@@ -162,6 +162,7 @@ export type Billing = {
   nfStatus: NfStatus;
   nfNumber: string | null;
   nfIssuedAt: string | null;
+  chargeSentAt: string | null;
   createdAt: string;
   updatedAt: string;
 };
