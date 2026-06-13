@@ -130,6 +130,71 @@ export type Appointment = {
   extraParticipant: string | null;
 };
 
+export type ExpenseCategory = {
+  id: string;
+  orgId: OrgId;
+  name: string;
+  color: string;
+  description: string | null;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export const EXPENSE_CATEGORY_PRESET_COLORS = [
+  '#ef4444', '#f97316', '#eab308', '#22c55e',
+  '#14b8a6', '#3b82f6', '#8b5cf6', '#ec4899',
+  '#6b7280', '#0ea5e9',
+] as const;
+
+export const PAYMENT_METHOD_TYPES = ['pix', 'cartao_credito', 'boleto', 'debito_conta'] as const;
+export type PaymentMethodType = (typeof PAYMENT_METHOD_TYPES)[number];
+
+export const PAYMENT_METHOD_TYPE_LABELS: Record<PaymentMethodType, string> = {
+  pix: 'Pix',
+  cartao_credito: 'Cartão de crédito',
+  boleto: 'Boleto',
+  debito_conta: 'Débito em conta',
+};
+
+export const RECURRENCE_TYPES = ['avulso', 'recorrente', 'parcelado'] as const;
+export type RecurrenceType = (typeof RECURRENCE_TYPES)[number];
+
+export const ACCOUNT_TYPES = ['corrente', 'poupanca', 'pagamento'] as const;
+export type AccountType = (typeof ACCOUNT_TYPES)[number];
+
+export const ACCOUNT_TYPE_LABELS: Record<AccountType, string> = {
+  corrente: 'Conta corrente',
+  poupanca: 'Poupança',
+  pagamento: 'Conta de pagamento',
+};
+
+export type PaymentAccount = {
+  id: string;
+  orgId: OrgId;
+  name: string;
+  bankName: string | null;
+  accountType: AccountType;
+  agency: string | null;
+  accountNumber: string | null;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CreditCard = {
+  id: string;
+  orgId: OrgId;
+  name: string;
+  brand: string | null;
+  lastFour: string | null;
+  closingDay: number | null;
+  dueDay: number | null;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export const BILLING_TYPES = ['receita', 'despesa'] as const;
 export type BillingType = (typeof BILLING_TYPES)[number];
 
@@ -159,6 +224,15 @@ export type Billing = {
   dueDate: string;
   paidAt: string | null;
   paymentMethod: string | null;
+  paymentMethodType: PaymentMethodType | null;
+  paymentAccountId: string | null;
+  creditCardId: string | null;
+  recurrenceType: RecurrenceType;
+  recurrenceGroupId: string | null;
+  installmentNumber: number | null;
+  installmentCount: number | null;
+  expenseCategoryId: string | null;
+  notes: string | null;
   nfStatus: NfStatus;
   nfNumber: string | null;
   nfIssuedAt: string | null;

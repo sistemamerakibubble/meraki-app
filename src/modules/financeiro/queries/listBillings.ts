@@ -11,6 +11,7 @@ export type ListBillingsArgs = {
   status?: BillingDerivedStatus;
   type?: BillingType;
   nfStatus?: NfStatus;
+  categoryId?: string;
   page?: number;
   pageSize?: number;
 };
@@ -29,6 +30,7 @@ export async function listBillings({
   status,
   type,
   nfStatus,
+  categoryId,
   page = 1,
   pageSize = PAGE_SIZE,
 }: ListBillingsArgs = {}): Promise<ListBillingsResult> {
@@ -39,7 +41,7 @@ export async function listBillings({
   let query = supabase
     .from('billings')
     .select(
-      'id, org_id, patient_id, appointment_id, type, billing_category, description, amount_cents, status, due_date, paid_at, payment_method, nf_status, nf_number, nf_issued_at, created_at, updated_at, patients(full_name)',
+      'id, org_id, patient_id, appointment_id, type, billing_category, description, amount_cents, status, due_date, paid_at, payment_method, payment_method_type, payment_account_id, credit_card_id, recurrence_type, recurrence_group_id, installment_number, installment_count, expense_category_id, notes, nf_status, nf_number, nf_issued_at, charge_sent_at, created_at, updated_at, patients(full_name)',
       { count: 'exact' },
     )
     .order('due_date', { ascending: false })
@@ -49,6 +51,7 @@ export async function listBillings({
   if (to) query = query.lte('due_date', to);
   if (type) query = query.eq('type', type);
   if (nfStatus) query = query.eq('nf_status', nfStatus);
+  if (categoryId) query = query.eq('expense_category_id', categoryId);
 
   if (status === 'atrasado') {
     const todayISO = new Date().toISOString().slice(0, 10);

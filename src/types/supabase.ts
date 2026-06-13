@@ -107,17 +107,27 @@ export type Database = {
           amount_cents: number
           appointment_id: string | null
           billing_category: Database["public"]["Enums"]["billing_category"] | null
+          charge_sent_at: string | null
           created_at: string
+          credit_card_id: string | null
           description: string
           due_date: string
+          expense_category_id: string | null
           id: string
+          installment_count: number | null
+          installment_number: number | null
           nf_issued_at: string | null
           nf_number: string | null
           nf_status: Database["public"]["Enums"]["nf_status"]
+          notes: string | null
           org_id: string
           paid_at: string | null
           patient_id: string | null
+          payment_account_id: string | null
           payment_method: string | null
+          payment_method_type: string | null
+          recurrence_group_id: string | null
+          recurrence_type: string
           status: Database["public"]["Enums"]["billing_status"]
           type: Database["public"]["Enums"]["billing_type"]
           updated_at: string
@@ -126,17 +136,27 @@ export type Database = {
           amount_cents: number
           appointment_id?: string | null
           billing_category?: Database["public"]["Enums"]["billing_category"] | null
+          charge_sent_at?: string | null
           created_at?: string
+          credit_card_id?: string | null
           description: string
           due_date: string
+          expense_category_id?: string | null
           id?: string
+          installment_count?: number | null
+          installment_number?: number | null
           nf_issued_at?: string | null
           nf_number?: string | null
           nf_status?: Database["public"]["Enums"]["nf_status"]
+          notes?: string | null
           org_id: string
           paid_at?: string | null
           patient_id?: string | null
+          payment_account_id?: string | null
           payment_method?: string | null
+          payment_method_type?: string | null
+          recurrence_group_id?: string | null
+          recurrence_type?: string
           status?: Database["public"]["Enums"]["billing_status"]
           type: Database["public"]["Enums"]["billing_type"]
           updated_at?: string
@@ -145,17 +165,27 @@ export type Database = {
           amount_cents?: number
           appointment_id?: string | null
           billing_category?: Database["public"]["Enums"]["billing_category"] | null
+          charge_sent_at?: string | null
           created_at?: string
+          credit_card_id?: string | null
           description?: string
           due_date?: string
+          expense_category_id?: string | null
           id?: string
+          installment_count?: number | null
+          installment_number?: number | null
           nf_issued_at?: string | null
           nf_number?: string | null
           nf_status?: Database["public"]["Enums"]["nf_status"]
+          notes?: string | null
           org_id?: string
           paid_at?: string | null
           patient_id?: string | null
+          payment_account_id?: string | null
           payment_method?: string | null
+          payment_method_type?: string | null
+          recurrence_group_id?: string | null
+          recurrence_type?: string
           status?: Database["public"]["Enums"]["billing_status"]
           type?: Database["public"]["Enums"]["billing_type"]
           updated_at?: string
@@ -180,6 +210,155 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "billings_payment_account_id_fkey"
+            columns: ["payment_account_id"]
+            isOneToOne: false
+            referencedRelation: "payment_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "billings_credit_card_id_fkey"
+            columns: ["credit_card_id"]
+            isOneToOne: false
+            referencedRelation: "credit_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      credit_cards: {
+        Row: {
+          active: boolean
+          brand: string | null
+          closing_day: number | null
+          created_at: string
+          due_day: number | null
+          id: string
+          last_four: string | null
+          name: string
+          org_id: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          brand?: string | null
+          closing_day?: number | null
+          created_at?: string
+          due_day?: number | null
+          id?: string
+          last_four?: string | null
+          name: string
+          org_id: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          brand?: string | null
+          closing_day?: number | null
+          created_at?: string
+          due_day?: number | null
+          id?: string
+          last_four?: string | null
+          name?: string
+          org_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_cards_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_accounts: {
+        Row: {
+          account_number: string | null
+          account_type: string
+          active: boolean
+          agency: string | null
+          bank_name: string | null
+          created_at: string
+          id: string
+          name: string
+          org_id: string
+          updated_at: string
+        }
+        Insert: {
+          account_number?: string | null
+          account_type: string
+          active?: boolean
+          agency?: string | null
+          bank_name?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          org_id: string
+          updated_at?: string
+        }
+        Update: {
+          account_number?: string | null
+          account_type?: string
+          active?: boolean
+          agency?: string | null
+          bank_name?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          org_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_accounts_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expense_categories: {
+        Row: {
+          active: boolean
+          color: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          org_id: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          color?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          org_id: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          color?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          org_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_categories_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
             referencedColumns: ["id"]
           },
         ]

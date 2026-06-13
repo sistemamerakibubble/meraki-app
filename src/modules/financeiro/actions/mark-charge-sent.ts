@@ -32,7 +32,7 @@ export async function markChargeSentAction(
 
   const { error } = await supabase
     .from('billings')
-    .update({ charge_sent_at: sent ? new Date().toISOString() : null } as Record<string, unknown>)
+    .update({ charge_sent_at: sent ? new Date().toISOString() : null })
     .in('id', parsed.data.billingIds);
 
   if (error) return err({ formError: 'Erro ao atualizar.' });

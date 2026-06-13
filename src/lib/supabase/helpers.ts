@@ -16,6 +16,8 @@ import type {
   Room,
   Supervision,
   SupervisionMessage,
+  PaymentMethodType,
+  RecurrenceType,
 } from '@/types/domain';
 
 type ProfileRow = Database['public']['Tables']['profiles']['Row'];
@@ -172,6 +174,26 @@ export function fromDbBilling(
     dueDate: row.due_date,
     paidAt: row.paid_at,
     paymentMethod: row.payment_method,
+    paymentMethodType:
+      (row as typeof row & { payment_method_type?: string | null }).payment_method_type as
+        | PaymentMethodType
+        | null ?? null,
+    paymentAccountId:
+      (row as typeof row & { payment_account_id?: string | null }).payment_account_id ?? null,
+    creditCardId:
+      (row as typeof row & { credit_card_id?: string | null }).credit_card_id ?? null,
+    recurrenceType:
+      ((row as typeof row & { recurrence_type?: string | null }).recurrence_type ??
+        'avulso') as RecurrenceType,
+    recurrenceGroupId:
+      (row as typeof row & { recurrence_group_id?: string | null }).recurrence_group_id ?? null,
+    installmentNumber:
+      (row as typeof row & { installment_number?: number | null }).installment_number ?? null,
+    installmentCount:
+      (row as typeof row & { installment_count?: number | null }).installment_count ?? null,
+    expenseCategoryId:
+      (row as typeof row & { expense_category_id?: string | null }).expense_category_id ?? null,
+    notes: (row as typeof row & { notes?: string | null }).notes ?? null,
     nfStatus: row.nf_status,
     nfNumber: row.nf_number,
     nfIssuedAt: row.nf_issued_at,

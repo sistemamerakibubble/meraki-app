@@ -9,20 +9,28 @@ import { formatBRL } from '@/lib/utils/money';
 import { formatDate } from '@/lib/utils/dates';
 import { cn } from '@/lib/utils/cn';
 import { routes } from '@/lib/constants/routes';
-import type { Role } from '@/types/domain';
+import type { CreditCard, ExpenseCategory, PaymentAccount, Role } from '@/types/domain';
 import type { ListBillingsResult } from '@/modules/financeiro/queries/listBillings';
 
 export function BillingsTable({
   result,
   patients,
+  accounts = [],
+  cards = [],
+  categories = [],
   role,
   query,
 }: {
   result: ListBillingsResult;
   patients: { id: string; fullName: string }[];
+  accounts?: PaymentAccount[];
+  cards?: CreditCard[];
+  categories?: ExpenseCategory[];
   role: Role;
   query: Record<string, string | undefined>;
 }) {
+  const categoryMap = new Map(categories.map((c) => [c.id, c]));
+
   if (result.items.length === 0) {
     return (
       <div className="rounded-lg border bg-card p-12 text-center">
@@ -47,59 +55,94 @@ export function BillingsTable({
 
   return (
     <div className="space-y-3">
-      <div className="overflow-hidden rounded-lg border bg-card">
+      <div className="overflow-x-auto rounded-lg border bg-card">
         <table className="w-full text-sm">
           <thead className="border-b bg-muted/40 text-left text-xs uppercase text-muted-foreground">
             <tr>
-              <th className="px-4 py-3">Descrição</th>
-              <th className="px-4 py-3">Paciente</th>
+              <th className="px-4 py-3">Descrição / Categoria</th>
+              <th className="px-4 py-3 hidden sm:table-cell">Paciente</th>
               <th className="px-4 py-3">Vencimento</th>
               <th className="px-4 py-3 text-right">Valor</th>
               <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">NF</th>
+              <th className="px-4 py-3 hidden md:table-cell">NF</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody className="divide-y">
-            {result.items.map((b) => (
-              <tr key={b.id}>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2 font-medium">
-                    {b.type === 'receita' ? (
-                      <ArrowDownLeft className="h-4 w-4 text-emerald-600" aria-hidden />
-                    ) : (
-                      <ArrowUpRight className="h-4 w-4 text-destructive" aria-hidden />
+            {result.items.map((b) => {
+              const cat = b.expenseCategoryId ? categoryMap.get(b.expenseCategoryId) : null;
+              return (
+                <tr key={b.id} className="hover:bg-muted/20 transition-colors">
+                  <td className="px-4 py-3">
+                    <div className="flex items-start gap-2">
+                      {b.type === 'receita' ? (
+                        <ArrowDownLeft className="h-4 w-4 text-emerald-600 mt-0.5 flex-shrink-0" aria-hidden />
+                      ) : (
+                        <ArrowUpRight className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" aria-hidden />
+                      )}
+                      <div className="min-w-0">
+                        <p className="font-medium truncate max-w-[200px]">{b.description}</p>
+                        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                          {cat ? (
+                            <span
+                              className="inline-flex items-center gap-1 text-xs rounded-full px-2 py-0.5"
+                              style={{ backgroundColor: `${cat.color}20`, color: cat.color }}
+                            >
+                              <span
+                                className="h-1.5 w-1.5 rounded-full flex-shrink-0"
+                                style={{ backgroundColor: cat.color }}
+                              />
+                              {cat.name}
+                            </span>
+                          ) : null}
+                          {b.installmentCount ? (
+                            <span className="text-xs text-muted-foreground bg-muted rounded-full px-2 py-0.5">
+                              {b.installmentNumber}/{b.installmentCount}
+                            </span>
+                          ) : null}
+                          {b.recurrenceType === 'recorrente' ? (
+                            <span className="text-xs text-muted-foreground bg-muted rounded-full px-2 py-0.5">
+                              Recorrente
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">
+                    {b.patientName ?? '—'}
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
+                    {formatDate(b.dueDate)}
+                  </td>
+                  <td
+                    className={cn(
+                      'px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap',
+                      b.type === 'receita' ? 'text-emerald-600' : 'text-destructive',
                     )}
-                    {b.description}
-                  </div>
-                  {b.paymentMethod ? (
-                    <p className="text-xs text-muted-foreground">{b.paymentMethod}</p>
-                  ) : null}
-                </td>
-                <td className="px-4 py-3 text-muted-foreground">
-                  {b.patientName ?? '—'}
-                </td>
-                <td className="px-4 py-3 text-muted-foreground">{formatDate(b.dueDate)}</td>
-                <td
-                  className={cn(
-                    'px-4 py-3 text-right font-semibold tabular-nums',
-                    b.type === 'receita' ? 'text-emerald-600' : 'text-destructive',
-                  )}
-                >
-                  {b.type === 'despesa' ? '-' : ''}
-                  {formatBRL(b.amountCents)}
-                </td>
-                <td className="px-4 py-3">
-                  <BillingStatusBadge status={b.derivedStatus} />
-                </td>
-                <td className="px-4 py-3">
-                  <NfStatusBadge status={b.nfStatus} number={b.nfNumber} />
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <BillingRowActions billing={b} patients={patients} role={role} />
-                </td>
-              </tr>
-            ))}
+                  >
+                    {b.type === 'despesa' ? '-' : ''}
+                    {formatBRL(b.amountCents)}
+                  </td>
+                  <td className="px-4 py-3">
+                    <BillingStatusBadge status={b.derivedStatus} />
+                  </td>
+                  <td className="px-4 py-3 hidden md:table-cell">
+                    <NfStatusBadge status={b.nfStatus} number={b.nfNumber} />
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <BillingRowActions
+                      billing={b}
+                      patients={patients}
+                      accounts={accounts}
+                      cards={cards}
+                      categories={categories}
+                      role={role}
+                    />
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

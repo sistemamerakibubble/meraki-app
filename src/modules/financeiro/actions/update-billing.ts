@@ -28,16 +28,22 @@ export async function updateBillingAction(
     return err({ fieldErrors: parsed.error.flatten().fieldErrors });
   }
 
+  const d = parsed.data;
   const supabase = await createClient();
   const { error } = await supabase
     .from('billings')
     .update({
-      patient_id: parsed.data.patientId,
-      type: parsed.data.type,
-      description: parsed.data.description,
-      amount_cents: parsed.data.amountCents,
-      due_date: parsed.data.dueDate,
-      payment_method: parsed.data.paymentMethod || null,
+      patient_id: d.patientId,
+      type: d.type,
+      description: d.description,
+      amount_cents: d.amountCents,
+      due_date: d.dueDate,
+      payment_method: d.paymentMethod || null,
+      payment_method_type: d.paymentMethodType || null,
+      payment_account_id: d.paymentAccountId,
+      credit_card_id: d.creditCardId,
+      expense_category_id: d.type === 'despesa' ? d.expenseCategoryId : null,
+      notes: d.notes || null,
     })
     .eq('id', id);
 

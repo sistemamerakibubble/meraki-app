@@ -19,15 +19,21 @@ import {
   setNfStatusAction,
 } from '@/modules/financeiro/actions/change-billing-status';
 import { deleteBillingAction } from '@/modules/financeiro/actions/delete-billing';
-import type { Billing, Role } from '@/types/domain';
+import type { Billing, CreditCard, ExpenseCategory, PaymentAccount, Role } from '@/types/domain';
 
 export function BillingRowActions({
   billing,
   patients,
+  accounts = [],
+  cards = [],
+  categories = [],
   role,
 }: {
   billing: Billing;
   patients: { id: string; fullName: string }[];
+  accounts?: PaymentAccount[];
+  cards?: CreditCard[];
+  categories?: ExpenseCategory[];
   role: Role;
 }) {
   const [pending, startTransition] = useTransition();
@@ -139,6 +145,9 @@ export function BillingRowActions({
         <BillingForm
           mode={{ kind: 'edit', billing }}
           patients={patients}
+          accounts={accounts}
+          cards={cards}
+          categories={categories}
           open
           onOpenChange={(next) => {
             if (!next) setEditing(false);
