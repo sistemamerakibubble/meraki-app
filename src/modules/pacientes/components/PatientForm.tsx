@@ -184,6 +184,8 @@ export function PatientForm({ mode, trigger, onSuccess }: Props) {
   }, [state, isEdit, onSuccess]);
 
   const onSubmit = form.handleSubmit((data) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const d = data as any;
     const fd = new FormData();
     fd.set('fullName', data.fullName);
     if (data.birthdate) fd.set('birthdate', data.birthdate);
@@ -206,26 +208,26 @@ export function PatientForm({ mode, trigger, onSuccess }: Props) {
     if (packageAmountDisplay) {
       fd.set('packageAmountCents', String(safeBrlToCents(packageAmountDisplay)));
     }
-    if (data.religiaoFamilia) fd.set('religiaoFamilia', data.religiaoFamilia);
-    if (data.irmaos) fd.set('irmaos', data.irmaos);
-    if (data.quemEncaminhou) fd.set('quemEncaminhou', data.quemEncaminhou);
-    if (data.inicioPsicoterapia) fd.set('inicioPsicoterapia', data.inicioPsicoterapia);
-    if (data.maeName) fd.set('maeName', data.maeName);
-    if (data.maeNascimento) fd.set('maeNascimento', data.maeNascimento);
-    if (data.maeEscolaridade) fd.set('maeEscolaridade', data.maeEscolaridade);
-    if (data.maeProfissao) fd.set('maeProfissao', data.maeProfissao);
-    if (data.maeCpf) fd.set('maeCpf', data.maeCpf);
-    if (data.maeRg) fd.set('maeRg', data.maeRg);
-    if (data.maeTelefone) fd.set('maeTelefone', data.maeTelefone);
-    if (data.maeEmail) fd.set('maeEmail', data.maeEmail);
-    if (data.paiName) fd.set('paiName', data.paiName);
-    if (data.paiNascimento) fd.set('paiNascimento', data.paiNascimento);
-    if (data.paiEscolaridade) fd.set('paiEscolaridade', data.paiEscolaridade);
-    if (data.paiProfissao) fd.set('paiProfissao', data.paiProfissao);
-    if (data.paiCpf) fd.set('paiCpf', data.paiCpf);
-    if (data.paiRg) fd.set('paiRg', data.paiRg);
-    if (data.paiTelefone) fd.set('paiTelefone', data.paiTelefone);
-    if (data.paiEmail) fd.set('paiEmail', data.paiEmail);
+    if (d.religiaoFamilia) fd.set('religiaoFamilia', d.religiaoFamilia);
+    if (d.irmaos) fd.set('irmaos', d.irmaos);
+    if (d.quemEncaminhou) fd.set('quemEncaminhou', d.quemEncaminhou);
+    if (d.inicioPsicoterapia) fd.set('inicioPsicoterapia', d.inicioPsicoterapia);
+    if (d.maeName) fd.set('maeName', d.maeName);
+    if (d.maeNascimento) fd.set('maeNascimento', d.maeNascimento);
+    if (d.maeEscolaridade) fd.set('maeEscolaridade', d.maeEscolaridade);
+    if (d.maeProfissao) fd.set('maeProfissao', d.maeProfissao);
+    if (d.maeCpf) fd.set('maeCpf', d.maeCpf);
+    if (d.maeRg) fd.set('maeRg', d.maeRg);
+    if (d.maeTelefone) fd.set('maeTelefone', d.maeTelefone);
+    if (d.maeEmail) fd.set('maeEmail', d.maeEmail);
+    if (d.paiName) fd.set('paiName', d.paiName);
+    if (d.paiNascimento) fd.set('paiNascimento', d.paiNascimento);
+    if (d.paiEscolaridade) fd.set('paiEscolaridade', d.paiEscolaridade);
+    if (d.maeProfissao) fd.set('paiProfissao', d.paiProfissao);
+    if (d.paiCpf) fd.set('paiCpf', d.paiCpf);
+    if (d.paiRg) fd.set('paiRg', d.paiRg);
+    if (d.paiTelefone) fd.set('paiTelefone', d.paiTelefone);
+    if (d.paiEmail) fd.set('paiEmail', d.paiEmail);
     startTransition(() => formAction(fd));
   });
 
