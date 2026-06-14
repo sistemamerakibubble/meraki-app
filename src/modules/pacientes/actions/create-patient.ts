@@ -28,7 +28,8 @@ export async function createPatientAction(
     return err({ fieldErrors: parsed.error.flatten().fieldErrors });
   }
 
-  const d = parsed.data;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const d = parsed.data as any;
   const supabase = await createClient();
   const maeFilled = d.maeName || d.maeTelefone || d.maeEmail;
   const paiFilled = d.paiName || d.paiTelefone || d.paiEmail;

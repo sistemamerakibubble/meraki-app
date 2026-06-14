@@ -96,6 +96,7 @@ export function EvolutionForm({
       toast.success(isEdit ? 'Evolução atualizada.' : 'Evolução registrada.');
       setOpen(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, isEdit]);
 
   const onSubmit = form.handleSubmit((data) => {
