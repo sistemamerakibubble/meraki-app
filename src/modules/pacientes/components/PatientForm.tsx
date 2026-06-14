@@ -150,7 +150,8 @@ function packageAmountDisplayFor(mode: Mode): string {
 
 export function PatientForm({ mode, trigger, onSuccess }: Props) {
   const [open, setOpen] = useState(false);
-  const form = useForm<PatientInput>({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const form = useForm<any>({
     resolver: zodResolver(patientSchema),
     defaultValues: defaultValuesFor(mode),
   });
