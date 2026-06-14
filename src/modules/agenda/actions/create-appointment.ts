@@ -57,11 +57,11 @@ export async function createAppointmentAction(
 
   // não-recorrente: insere 1
   if (!parsed.data.recurring) {
-    const { data, error } = await supabase
-      .from('appointments')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase.from('appointments') as any)
       .insert({
         org_id: session.profile.orgId,
-        patient_id: parsed.data.patientId,
+        patient_id: parsed.data.patientId || null,
         professional_id: parsed.data.professionalId,
         room_id: parsed.data.roomId,
         starts_at: start0.toISOString(),
@@ -70,11 +70,21 @@ export async function createAppointmentAction(
         type: parsed.data.type,
         makeup_for_id: parsed.data.makeupForId,
         extra_participant: parsed.data.extraParticipant || null,
+        title: parsed.data.type === 'compromisso' ? (parsed.data.extraParticipant || null) : null,
+        modality: parsed.data.modality ?? null,
       })
       .select('id')
       .single();
 
     if (error) return err({ formError: mapDbError(error.message) });
+
+    // Se for reposição com makeupForId, marca a sessão original como "reagendado"
+    if (parsed.data.type === 'reposicao' && parsed.data.makeupForId) {
+      await supabase
+        .from('appointments')
+        .update({ status: 'reagendado' } as any)
+        .eq('id', parsed.data.makeupForId);
+    }
 
     revalidatePath(routes.agenda);
     return ok({ id: data.id, createdCount: 1, skippedCount: 0 });
@@ -95,11 +105,11 @@ export async function createAppointmentAction(
     const starts = i === 0 ? start0 : addInterval(start0, every * i, unit);
     const ends = i === 0 ? end0 : addInterval(end0, every * i, unit);
 
-    const { data, error } = await supabase
-      .from('appointments')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase.from('appointments') as any)
       .insert({
         org_id: session.profile.orgId,
-        patient_id: parsed.data.patientId,
+        patient_id: parsed.data.patientId || null,
         professional_id: parsed.data.professionalId,
         room_id: parsed.data.roomId,
         starts_at: starts.toISOString(),
@@ -108,6 +118,8 @@ export async function createAppointmentAction(
         type: parsed.data.type,
         extra_participant: parsed.data.extraParticipant || null,
         recurrence_group_id: recurrenceGroupId,
+        title: parsed.data.type === 'compromisso' ? (parsed.data.extraParticipant || null) : null,
+        modality: parsed.data.modality ?? null,
       })
       .select('id')
       .single();

@@ -1,19 +1,26 @@
 import type { Database } from '@/types/supabase';
 import type {
   Appointment,
+  AppointmentModality,
   Billing,
   BillingDerivedStatus,
   ClinicalNote,
+  DadosAcademicos,
+  DadosQueixas,
+  DadosSaude,
   InventoryItem,
   LibraryFile,
   LibraryFolder,
+  Medicamento,
   Patient,
   PatientEvolution,
   PatientNote,
   Professional,
   Profile,
   Reminder,
+  Responsavel,
   Room,
+  RotinaItem,
   Supervision,
   SupervisionMessage,
   PaymentMethodType,
@@ -42,6 +49,20 @@ export function fromDbProfile(row: ProfileRow): Profile {
 }
 
 export function fromDbPatient(row: PatientRow): Patient {
+  const ext = row as PatientRow & {
+    religiao_familia?: string | null;
+    irmaos?: string | null;
+    quem_encaminhou?: string | null;
+    inicio_psicoterapia?: string | null;
+    responsavel_mae?: Responsavel | null;
+    responsavel_pai?: Responsavel | null;
+    dados_academicos?: DadosAcademicos | null;
+    dados_saude?: DadosSaude | null;
+    medicamentos?: Medicamento[] | null;
+    atividades?: string | null;
+    rotina?: RotinaItem | null;
+    dados_queixas?: DadosQueixas | null;
+  };
   return {
     id: row.id,
     orgId: row.org_id,
@@ -67,6 +88,18 @@ export function fromDbPatient(row: PatientRow): Patient {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     deletedAt: row.deleted_at,
+    religiaoFamilia: ext.religiao_familia ?? null,
+    irmaos: ext.irmaos ?? null,
+    quemEncaminhou: ext.quem_encaminhou ?? null,
+    inicioPsicoterapia: ext.inicio_psicoterapia ?? null,
+    responsavelMae: ext.responsavel_mae ?? null,
+    responsavelPai: ext.responsavel_pai ?? null,
+    dadosAcademicos: ext.dados_academicos ?? null,
+    dadosSaude: ext.dados_saude ?? null,
+    medicamentos: ext.medicamentos ?? null,
+    atividades: ext.atividades ?? null,
+    rotina: ext.rotina ?? null,
+    dadosQueixas: ext.dados_queixas ?? null,
   };
 }
 
@@ -115,18 +148,24 @@ function pick<T>(value: T | T[] | null | undefined): T | null {
   return value;
 }
 
+type MakeupForMini = { starts_at: string } | null;
+
 export function fromDbAppointment(
   row: AppointmentRow & {
     patients?: PatientMini | PatientMini[];
     professionals?: ProfessionalMini | ProfessionalMini[];
     rooms?: RoomMini | RoomMini[];
+    makeup_for?: MakeupForMini | MakeupForMini[];
   },
 ): Appointment {
+  const ext = row as typeof row & { title?: string | null; modality?: string | null };
+  const makeupFor = pick(row.makeup_for);
   return {
     id: row.id,
     orgId: row.org_id,
     patientId: row.patient_id,
     patientName: pick(row.patients)?.full_name ?? null,
+    title: ext.title ?? null,
     professionalId: row.professional_id,
     professionalName: pick(row.professionals)?.full_name ?? null,
     roomId: row.room_id,
@@ -139,7 +178,9 @@ export function fromDbAppointment(
     recurrenceGroupId: row.recurrence_group_id,
     type: row.type,
     makeupForId: row.makeup_for_id,
+    makeupForDate: makeupFor?.starts_at ?? null,
     extraParticipant: row.extra_participant,
+    modality: (ext.modality ?? null) as AppointmentModality | null,
   };
 }
 

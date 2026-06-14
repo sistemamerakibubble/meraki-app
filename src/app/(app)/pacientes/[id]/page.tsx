@@ -9,10 +9,19 @@ import { getPatient } from '@/modules/pacientes/queries/getPatient';
 import { getPatientTimeline } from '@/modules/pacientes/queries/getPatientTimeline';
 import { listEvolutions } from '@/modules/pacientes/queries/listEvolutions';
 import { listPatientNotes } from '@/modules/pacientes/queries/listPatientNotes';
+import { listPatientBillings } from '@/modules/pacientes/queries/listPatientBillings';
+import { listPatientAppointments } from '@/modules/pacientes/queries/listPatientAppointments';
 
 import { PatientTabsNav } from '@/modules/pacientes/components/PatientTabsNav';
 import { parseTab } from '@/modules/pacientes/components/patientTabKey';
 import { PatientInfoTab } from '@/modules/pacientes/components/tabs/PatientInfoTab';
+import { AcademicoTab } from '@/modules/pacientes/components/tabs/AcademicoTab';
+import { SaudeTab } from '@/modules/pacientes/components/tabs/SaudeTab';
+import { MedicacaoTab } from '@/modules/pacientes/components/tabs/MedicacaoTab';
+import { QueixasTab } from '@/modules/pacientes/components/tabs/QueixasTab';
+import { RotinaTab } from '@/modules/pacientes/components/tabs/RotinaTab';
+import { AgendamentoTab } from '@/modules/pacientes/components/tabs/AgendamentoTab';
+import { RegistroDocumentalTab } from '@/modules/pacientes/components/tabs/RegistroDocumentalTab';
 import { SessionsHistoryTab } from '@/modules/pacientes/components/tabs/SessionsHistoryTab';
 import { PeriodicEvolutionTab } from '@/modules/pacientes/components/tabs/PeriodicEvolutionTab';
 import { PatientNotesTab } from '@/modules/pacientes/components/tabs/PatientNotesTab';
@@ -26,7 +35,7 @@ type SearchParams = Promise<{ tab?: string }>;
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { id } = await params;
   const patient = await getPatient(id);
-  return { title: patient?.fullName ?? 'Paciente' };
+  return { title: patient?.fullName ?? 'Cliente' };
 }
 
 export default async function PatientDetailPage({
@@ -44,10 +53,12 @@ export default async function PatientDetailPage({
   const tab = parseTab(sp.tab);
   const canWriteNotes = session.profile.role === 'admin' || session.profile.role === 'medico';
 
-  const [timeline, evolutions, patientNotes] = await Promise.all([
+  const [timeline, evolutions, patientNotes, billings, appointments] = await Promise.all([
     tab === 'sessoes' ? getPatientTimeline(id) : Promise.resolve([]),
     tab === 'evolucao' ? listEvolutions(id) : Promise.resolve([]),
     tab === 'notas' ? listPatientNotes(id) : Promise.resolve([]),
+    tab === 'registro' || tab === 'agendamento' ? listPatientBillings(id) : Promise.resolve([]),
+    tab === 'registro' || tab === 'agendamento' ? listPatientAppointments(id) : Promise.resolve([]),
   ]);
 
   return (
@@ -56,7 +67,7 @@ export default async function PatientDetailPage({
         <Button asChild variant="ghost" size="sm" className="gap-1 px-2">
           <Link href={routes.pacientes}>
             <ArrowLeft className="h-4 w-4" aria-hidden />
-            Voltar
+            Voltar a Clientes
           </Link>
         </Button>
       </div>
@@ -73,6 +84,25 @@ export default async function PatientDetailPage({
 
         <div className="min-w-0">
           {tab === 'info' ? <PatientInfoTab patient={patient} /> : null}
+          {tab === 'academico' ? <AcademicoTab patient={patient} /> : null}
+          {tab === 'saude' ? <SaudeTab patient={patient} /> : null}
+          {tab === 'medicacao' ? <MedicacaoTab patient={patient} /> : null}
+          {tab === 'queixas' ? <QueixasTab patient={patient} /> : null}
+          {tab === 'rotina' ? <RotinaTab patient={patient} /> : null}
+          {tab === 'agendamento' ? (
+            <AgendamentoTab
+              patient={patient}
+              appointments={appointments}
+              billings={billings}
+            />
+          ) : null}
+          {tab === 'registro' ? (
+            <RegistroDocumentalTab
+              patientId={patient.id}
+              appointments={appointments}
+              billings={billings}
+            />
+          ) : null}
           {tab === 'sessoes' ? (
             <SessionsHistoryTab
               patientId={patient.id}

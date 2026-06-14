@@ -33,10 +33,7 @@ export async function listUpcomingPayables(): Promise<UpcomingPayablesResult> {
 
   const { data, error } = await supabase
     .from('billings')
-    .select(
-      'id, org_id, patient_id, appointment_id, type, billing_category, description, amount_cents, status, due_date, paid_at, payment_method, payment_method_type, payment_account_id, credit_card_id, recurrence_type, recurrence_group_id, installment_number, installment_count, expense_category_id, notes, nf_status, nf_number, nf_issued_at, charge_sent_at, created_at, updated_at, patients(full_name)',
-      { count: 'exact' },
-    )
+    .select('*, patients(full_name)', { count: 'exact' })
     .eq('type', 'despesa')
     .eq('status', 'pendente')
     .lte('due_date', toISO(in30days))

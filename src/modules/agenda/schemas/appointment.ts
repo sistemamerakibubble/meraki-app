@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { APPOINTMENT_STATUSES, APPOINTMENT_TYPES } from '@/types/domain';
+import { APPOINTMENT_MODALITIES, APPOINTMENT_STATUSES, APPOINTMENT_TYPES } from '@/types/domain';
 
 const uuid = z.string().uuid('ID inválido');
 
@@ -10,7 +10,7 @@ export type RecurrenceUnit = (typeof RECURRENCE_UNITS)[number];
 
 export const appointmentSchema = z
   .object({
-    patientId: uuid,
+    patientId: z.string().optional().default(''),
     professionalId: uuid,
     roomId: z
       .string()
@@ -33,6 +33,7 @@ export const appointmentSchema = z
         message: 'Agendamento original inválido',
       }),
     extraParticipant: z.string().max(200, 'Máximo 200 caracteres').optional().default(''),
+    modality: z.enum(APPOINTMENT_MODALITIES).optional().nullable(),
     recurring: truthy
       .optional()
       .transform((v) => v === true || v === 'on' || v === 'true'),
@@ -64,3 +65,4 @@ export const appointmentSchema = z
 export type AppointmentInput = z.infer<typeof appointmentSchema>;
 
 export const appointmentStatusSchema = z.enum(APPOINTMENT_STATUSES);
+export const appointmentModalitySchema = z.enum(APPOINTMENT_MODALITIES);

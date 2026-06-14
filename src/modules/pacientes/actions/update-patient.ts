@@ -31,8 +31,11 @@ export async function updatePatientAction(
 
   const d = parsed.data;
   const supabase = await createClient();
-  const { error } = await supabase
-    .from('patients')
+  const maeFilled = d.maeName || d.maeTelefone || d.maeEmail;
+  const paiFilled = d.paiName || d.paiTelefone || d.paiEmail;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase.from('patients') as any)
     .update({
       full_name: d.fullName,
       birthdate: d.birthdate,
@@ -57,6 +60,30 @@ export async function updatePatientAction(
       notes: d.notes || null,
       billing_plan: d.billingPlan || null,
       package_amount_cents: d.packageAmountCents,
+      religiao_familia: d.religiaoFamilia || null,
+      irmaos: d.irmaos || null,
+      quem_encaminhou: d.quemEncaminhou || null,
+      inicio_psicoterapia: d.inicioPsicoterapia || null,
+      responsavel_mae: maeFilled ? {
+        nome: d.maeName || undefined,
+        nascimento: d.maeNascimento || undefined,
+        escolaridade: d.maeEscolaridade || undefined,
+        profissao: d.maeProfissao || undefined,
+        cpf: d.maeCpf || undefined,
+        rg: d.maeRg || undefined,
+        telefone: d.maeTelefone || undefined,
+        email: d.maeEmail || undefined,
+      } : null,
+      responsavel_pai: paiFilled ? {
+        nome: d.paiName || undefined,
+        nascimento: d.paiNascimento || undefined,
+        escolaridade: d.paiEscolaridade || undefined,
+        profissao: d.paiProfissao || undefined,
+        cpf: d.paiCpf || undefined,
+        rg: d.paiRg || undefined,
+        telefone: d.paiTelefone || undefined,
+        email: d.paiEmail || undefined,
+      } : null,
     })
     .eq('id', id)
     .is('deleted_at', null);

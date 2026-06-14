@@ -41,6 +41,95 @@ export type SessionUser = {
   profile: Profile;
 };
 
+export type Responsavel = {
+  nome?: string;
+  nascimento?: string;
+  escolaridade?: string;
+  profissao?: string;
+  cpf?: string;
+  rg?: string;
+  telefone?: string;
+  email?: string;
+};
+
+export type DadosAcademicos = {
+  escola?: string;
+  endereco?: string;
+  telefone?: string;
+  desde?: string;
+  turma?: string;
+  turno?: string;
+  tipoEscola?: string;
+  email?: string;
+  reprovas?: string;
+  coordenador?: string;
+  orientador?: string;
+  mediador?: string;
+  historico?: string;
+  // Informações profissionais
+  empresa?: string;
+  enderecoEmpresa?: string;
+  telefoneEmpresa?: string;
+  cargo?: string;
+  horarioTrabalho?: string;
+  renda?: string;
+  tempoCargo?: string;
+  historicoProfissional?: string;
+};
+
+export type DadosSaude = {
+  diagnosticos?: string;
+  tratamentosAtuais?: string;
+  atualizacoesTratamentos?: string;
+  sono?: string;
+};
+
+export type Medicamento = {
+  nome: string;
+  dosagem?: string;
+  inicio?: string;
+  alteracao?: string;
+};
+
+export type RotinaItem = {
+  segunda?: string;
+  terca?: string;
+  quarta?: string;
+  quinta?: string;
+  sexta?: string;
+  sabado?: string;
+  domingo?: string;
+};
+
+export type OutraQueixa = {
+  id: string;
+  data: string;
+  texto: string;
+};
+
+export type Sintoma = {
+  id: string;
+  nome: string;
+  inicio?: string;
+  situacao?: string;
+  frequencia?: string;
+  intensidade?: string;
+  observacoes?: string;
+  statusFinal?: string;
+};
+
+export type AnaliseSintomas = {
+  id: string;
+  periodo: string;
+  sintomas: Sintoma[];
+};
+
+export type DadosQueixas = {
+  queixasIniciais?: string;
+  outrasQueixas?: OutraQueixa[];
+  analises?: AnaliseSintomas[];
+};
+
 export type Patient = {
   id: string;
   orgId: OrgId;
@@ -66,6 +155,19 @@ export type Patient = {
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
+  // Campos estendidos
+  religiaoFamilia: string | null;
+  irmaos: string | null;
+  quemEncaminhou: string | null;
+  inicioPsicoterapia: string | null;
+  responsavelMae: Responsavel | null;
+  responsavelPai: Responsavel | null;
+  dadosAcademicos: DadosAcademicos | null;
+  dadosSaude: DadosSaude | null;
+  medicamentos: Medicamento[] | null;
+  atividades: string | null;
+  rotina: RotinaItem | null;
+  dadosQueixas: DadosQueixas | null;
 };
 
 export const BILLING_PLANS = ['mensal', 'quinzenal'] as const;
@@ -86,10 +188,39 @@ export const APPOINTMENT_STATUSES = [
   'realizado',
   'cancelado',
   'faltou',
+  'reagendado',
 ] as const;
 export type AppointmentStatus = (typeof APPOINTMENT_STATUSES)[number];
 
-export const APPOINTMENT_TYPES = ['pacote', 'reposicao', 'extra'] as const;
+export const APPOINTMENT_MODALITIES = ['presencial', 'online', 'externo'] as const;
+export type AppointmentModality = (typeof APPOINTMENT_MODALITIES)[number];
+
+export const APPOINTMENT_MODALITY_LABELS: Record<AppointmentModality, string> = {
+  presencial: 'Presencial',
+  online: 'Online',
+  externo: 'Atendimento externo',
+};
+
+export const EXTRA_PARTICIPANTS = [
+  'medico',
+  'terapeuta',
+  'pai',
+  'mae',
+  'conjuge',
+  'professor_coordenador',
+] as const;
+export type ExtraParticipant = (typeof EXTRA_PARTICIPANTS)[number];
+
+export const EXTRA_PARTICIPANT_LABELS: Record<ExtraParticipant, string> = {
+  medico: 'Médico(a)',
+  terapeuta: 'Terapeuta',
+  pai: 'Pai',
+  mae: 'Mãe',
+  conjuge: 'Cônjuge',
+  professor_coordenador: 'Professor(a) / Coordenador(a)',
+};
+
+export const APPOINTMENT_TYPES = ['pacote', 'reposicao', 'extra', 'compromisso'] as const;
 export type AppointmentType = (typeof APPOINTMENT_TYPES)[number];
 
 export type Professional = {
@@ -113,8 +244,9 @@ export type Room = {
 export type Appointment = {
   id: string;
   orgId: OrgId;
-  patientId: string;
+  patientId: string | null;
   patientName: string | null;
+  title: string | null;
   professionalId: string;
   professionalName: string | null;
   roomId: string | null;
@@ -127,7 +259,9 @@ export type Appointment = {
   recurrenceGroupId: string | null;
   type: AppointmentType;
   makeupForId: string | null;
+  makeupForDate: string | null;
   extraParticipant: string | null;
+  modality: AppointmentModality | null;
 };
 
 export type ExpenseCategory = {

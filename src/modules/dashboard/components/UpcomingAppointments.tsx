@@ -13,19 +13,21 @@ import { routes } from '@/lib/constants/routes';
 import type { Appointment } from '@/types/domain';
 
 const STATUS_STYLE: Record<Appointment['status'], string> = {
-  agendado: 'bg-muted text-muted-foreground',
-  confirmado: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300',
-  realizado: 'bg-primary/15 text-primary',
-  cancelado: 'bg-destructive/10 text-destructive',
-  faltou: 'bg-amber-500/15 text-amber-700 dark:text-amber-300',
+  agendado:   'bg-orange-100 text-orange-700',
+  confirmado: 'bg-sky-100 text-sky-700',
+  realizado:  'bg-green-200 text-green-800',
+  cancelado:  'bg-muted text-muted-foreground',
+  faltou:     'bg-red-100 text-red-700',
+  reagendado: 'bg-teal-100 text-teal-700',
 };
 
 const STATUS_LABEL: Record<Appointment['status'], string> = {
-  agendado: 'Agendado',
+  agendado:   'Agendado',
   confirmado: 'Confirmado',
-  realizado: 'Realizado',
-  cancelado: 'Cancelado',
-  faltou: 'Faltou',
+  realizado:  'Realizado',
+  cancelado:  'Cancelado',
+  faltou:     'Faltou',
+  reagendado: 'Reagendado',
 };
 
 export function UpcomingAppointments({ items }: { items: Appointment[] }) {

@@ -25,9 +25,9 @@ export async function changeAppointmentStatusAction(
   const { error } = await supabase
     .from('appointments')
     .update({
-      status: parsed.data,
+      status: parsed.data as string,
       confirmed: parsed.data === 'confirmado',
-    })
+    } as any)
     .eq('id', id);
 
   if (error) return err('Não foi possível atualizar o status.');

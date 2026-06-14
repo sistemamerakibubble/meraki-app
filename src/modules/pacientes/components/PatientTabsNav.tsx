@@ -2,12 +2,32 @@
 
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { IdCard, History, TrendingUp, FileText, Pin } from 'lucide-react';
+import {
+  IdCard,
+  GraduationCap,
+  HeartPulse,
+  Pill,
+  MessageSquareWarning,
+  ClipboardList,
+  CalendarDays,
+  FolderOpen,
+  History,
+  TrendingUp,
+  FileText,
+  Pin,
+} from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import type { PatientTabKey } from '@/modules/pacientes/components/patientTabKey';
 
 const TABS: ReadonlyArray<{ key: PatientTabKey; label: string; Icon: typeof IdCard }> = [
-  { key: 'info', label: 'Informações do Paciente', Icon: IdCard },
+  { key: 'info', label: 'Informações do Cliente', Icon: IdCard },
+  { key: 'academico', label: 'Informações Acadêmicas', Icon: GraduationCap },
+  { key: 'saude', label: 'Informações de Saúde', Icon: HeartPulse },
+  { key: 'medicacao', label: 'Medicação', Icon: Pill },
+  { key: 'queixas', label: 'Queixas e Sintomas', Icon: MessageSquareWarning },
+  { key: 'rotina', label: 'Rotina e Atividades', Icon: ClipboardList },
+  { key: 'agendamento', label: 'Agendamento / Recebimento', Icon: CalendarDays },
+  { key: 'registro', label: 'Registro Documental', Icon: FolderOpen },
   { key: 'sessoes', label: 'Histórico de Sessões', Icon: History },
   { key: 'evolucao', label: 'Evolução Periódica', Icon: TrendingUp },
   { key: 'documento', label: 'Gerar Documento / Laudo', Icon: FileText },

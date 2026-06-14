@@ -8,10 +8,16 @@ export async function listProfessionals(): Promise<Professional[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('professionals')
-    .select('*')
+    .select('*, profiles!profile_id(role)')
     .eq('active', true)
     .order('full_name', { ascending: true });
 
+  // Filtra profissionais vinculados a perfis admin (ex: administração)
+  const filtered = (data ?? []).filter((p: any) => {
+    const profile = Array.isArray(p.profiles) ? p.profiles[0] : p.profiles;
+    return !profile || profile.role !== 'admin';
+  });
+
   if (error) throw error;
-  return (data ?? []).map(fromDbProfessional);
+  return filtered.map(fromDbProfessional);
 }

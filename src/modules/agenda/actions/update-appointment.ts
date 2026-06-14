@@ -39,10 +39,10 @@ export async function updateAppointmentAction(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase
-    .from('appointments')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase.from('appointments') as any)
     .update({
-      patient_id: parsed.data.patientId,
+      patient_id: parsed.data.patientId || null,
       professional_id: parsed.data.professionalId,
       room_id: parsed.data.roomId,
       starts_at: new Date(parsed.data.startsAt).toISOString(),
@@ -51,6 +51,7 @@ export async function updateAppointmentAction(
       type: parsed.data.type,
       makeup_for_id: parsed.data.makeupForId,
       extra_participant: parsed.data.extraParticipant || null,
+      modality: parsed.data.modality ?? null,
     })
     .eq('id', id);
 

@@ -1,4 +1,4 @@
-import { addDays, endOfDay, startOfDay, startOfWeek } from 'date-fns';
+import { addDays, endOfDay, endOfMonth, startOfDay, startOfMonth, startOfWeek } from 'date-fns';
 
 export type WeekRange = {
   start: Date;
@@ -18,6 +18,26 @@ export function buildWeekRange(cursor: Date): WeekRange {
 
 export function buildDayRange(cursor: Date): { start: Date; end: Date } {
   return { start: startOfDay(cursor), end: endOfDay(cursor) };
+}
+
+export function buildMonthRange(cursor: Date): { start: Date; end: Date; weeks: Date[][] } {
+  const monthStart = startOfMonth(cursor);
+  const monthEnd = endOfMonth(cursor);
+  // Start the grid from the Sunday of the week containing the 1st
+  const gridStart = startOfWeek(monthStart, { weekStartsOn: 0 });
+  // Build 6 weeks max
+  const weeks: Date[][] = [];
+  let current = gridStart;
+  while (current <= monthEnd || weeks.length < 6) {
+    const week: Date[] = [];
+    for (let i = 0; i < 7; i++) {
+      week.push(current);
+      current = addDays(current, 1);
+    }
+    weeks.push(week);
+    if (current > monthEnd && weeks.length >= 4) break;
+  }
+  return { start: startOfDay(monthStart), end: endOfDay(monthEnd), weeks };
 }
 
 export function parseDateParam(raw: string | undefined, fallback: Date = new Date()): Date {

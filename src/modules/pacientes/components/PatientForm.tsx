@@ -91,6 +91,26 @@ function defaultValuesFor(mode: Mode): PatientInput {
       notes: p.notes ?? '',
       billingPlan: (p.billingPlan as PatientInput['billingPlan']) ?? '',
       packageAmountCents: p.packageAmountCents,
+      religiaoFamilia: p.religiaoFamilia ?? '',
+      irmaos: p.irmaos ?? '',
+      quemEncaminhou: p.quemEncaminhou ?? '',
+      inicioPsicoterapia: p.inicioPsicoterapia ?? '',
+      maeName: p.responsavelMae?.nome ?? '',
+      maeNascimento: p.responsavelMae?.nascimento ?? '',
+      maeEscolaridade: p.responsavelMae?.escolaridade ?? '',
+      maeProfissao: p.responsavelMae?.profissao ?? '',
+      maeCpf: p.responsavelMae?.cpf ?? '',
+      maeRg: p.responsavelMae?.rg ?? '',
+      maeTelefone: p.responsavelMae?.telefone ?? '',
+      maeEmail: p.responsavelMae?.email ?? '',
+      paiName: p.responsavelPai?.nome ?? '',
+      paiNascimento: p.responsavelPai?.nascimento ?? '',
+      paiEscolaridade: p.responsavelPai?.escolaridade ?? '',
+      paiProfissao: p.responsavelPai?.profissao ?? '',
+      paiCpf: p.responsavelPai?.cpf ?? '',
+      paiRg: p.responsavelPai?.rg ?? '',
+      paiTelefone: p.responsavelPai?.telefone ?? '',
+      paiEmail: p.responsavelPai?.email ?? '',
     };
   }
   return {
@@ -112,6 +132,12 @@ function defaultValuesFor(mode: Mode): PatientInput {
     notes: '',
     billingPlan: '',
     packageAmountCents: null,
+    religiaoFamilia: '',
+    irmaos: '',
+    quemEncaminhou: '',
+    inicioPsicoterapia: '',
+    maeName: '', maeNascimento: '', maeEscolaridade: '', maeProfissao: '', maeCpf: '', maeRg: '', maeTelefone: '', maeEmail: '',
+    paiName: '', paiNascimento: '', paiEscolaridade: '', paiProfissao: '', paiCpf: '', paiRg: '', paiTelefone: '', paiEmail: '',
   };
 }
 
@@ -180,6 +206,26 @@ export function PatientForm({ mode, trigger, onSuccess }: Props) {
     if (packageAmountDisplay) {
       fd.set('packageAmountCents', String(safeBrlToCents(packageAmountDisplay)));
     }
+    if (data.religiaoFamilia) fd.set('religiaoFamilia', data.religiaoFamilia);
+    if (data.irmaos) fd.set('irmaos', data.irmaos);
+    if (data.quemEncaminhou) fd.set('quemEncaminhou', data.quemEncaminhou);
+    if (data.inicioPsicoterapia) fd.set('inicioPsicoterapia', data.inicioPsicoterapia);
+    if (data.maeName) fd.set('maeName', data.maeName);
+    if (data.maeNascimento) fd.set('maeNascimento', data.maeNascimento);
+    if (data.maeEscolaridade) fd.set('maeEscolaridade', data.maeEscolaridade);
+    if (data.maeProfissao) fd.set('maeProfissao', data.maeProfissao);
+    if (data.maeCpf) fd.set('maeCpf', data.maeCpf);
+    if (data.maeRg) fd.set('maeRg', data.maeRg);
+    if (data.maeTelefone) fd.set('maeTelefone', data.maeTelefone);
+    if (data.maeEmail) fd.set('maeEmail', data.maeEmail);
+    if (data.paiName) fd.set('paiName', data.paiName);
+    if (data.paiNascimento) fd.set('paiNascimento', data.paiNascimento);
+    if (data.paiEscolaridade) fd.set('paiEscolaridade', data.paiEscolaridade);
+    if (data.paiProfissao) fd.set('paiProfissao', data.paiProfissao);
+    if (data.paiCpf) fd.set('paiCpf', data.paiCpf);
+    if (data.paiRg) fd.set('paiRg', data.paiRg);
+    if (data.paiTelefone) fd.set('paiTelefone', data.paiTelefone);
+    if (data.paiEmail) fd.set('paiEmail', data.paiEmail);
     startTransition(() => formAction(fd));
   });
 
@@ -188,7 +234,7 @@ export function PatientForm({ mode, trigger, onSuccess }: Props) {
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader className="flex-row items-center justify-between gap-4 pr-6">
-          <DialogTitle>{isEdit ? 'Editar paciente' : 'Novo paciente'}</DialogTitle>
+          <DialogTitle>{isEdit ? 'Editar cliente' : 'Novo cliente'}</DialogTitle>
           <Button
             type="button"
             variant="outline"
@@ -480,6 +526,111 @@ export function PatientForm({ mode, trigger, onSuccess }: Props) {
               />
             </section>
 
+            {/* ========================= Identificação complementar ========================= */}
+            <section className="space-y-4">
+              <SectionTitle>Identificação complementar</SectionTitle>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <FormField control={form.control} name="quemEncaminhou" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Quem encaminhou?</FormLabel>
+                    <FormControl><Input placeholder="Ex.: Pediatra, escola..." {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="inicioPsicoterapia" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Início da psicoterapia</FormLabel>
+                    <FormControl><Input type="date" {...field} value={field.value ?? ''} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="religiaoFamilia" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Religião da família</FormLabel>
+                    <FormControl><Input placeholder="Ex.: Católica" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <div className="sm:col-span-2">
+                  <FormField control={form.control} name="irmaos" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Irmãos (nome e data de nascimento)</FormLabel>
+                      <FormControl>
+                        <textarea rows={2} className={textareaClass} placeholder="Ex.: Ana — 10/03/2018, Pedro — 05/07/2020" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
+              </div>
+            </section>
+
+            {/* ========================= Responsável Mãe ========================= */}
+            <section className="space-y-4">
+              <SectionTitle>Dados da Mãe / Responsável</SectionTitle>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                  <FormField control={form.control} name="maeName" render={({ field }) => (
+                    <FormItem><FormLabel>Nome</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                  )} />
+                </div>
+                <FormField control={form.control} name="maeNascimento" render={({ field }) => (
+                  <FormItem><FormLabel>Data de nascimento</FormLabel><FormControl><Input type="date" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="maeEscolaridade" render={({ field }) => (
+                  <FormItem><FormLabel>Escolaridade</FormLabel><FormControl><Input placeholder="Ex.: Ensino Superior completo" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="maeProfissao" render={({ field }) => (
+                  <FormItem><FormLabel>Profissão</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="maeCpf" render={({ field }) => (
+                  <FormItem><FormLabel>CPF</FormLabel><FormControl><Input placeholder="000.000.000-00" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="maeRg" render={({ field }) => (
+                  <FormItem><FormLabel>RG</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="maeTelefone" render={({ field }) => (
+                  <FormItem><FormLabel>Celular</FormLabel><FormControl><Input inputMode="tel" placeholder="(11) 99999-9999" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="maeEmail" render={({ field }) => (
+                  <FormItem><FormLabel>E-mail</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+              </div>
+            </section>
+
+            {/* ========================= Responsável Pai ========================= */}
+            <section className="space-y-4">
+              <SectionTitle>Dados do Pai / Responsável</SectionTitle>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                  <FormField control={form.control} name="paiName" render={({ field }) => (
+                    <FormItem><FormLabel>Nome</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                  )} />
+                </div>
+                <FormField control={form.control} name="paiNascimento" render={({ field }) => (
+                  <FormItem><FormLabel>Data de nascimento</FormLabel><FormControl><Input type="date" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="paiEscolaridade" render={({ field }) => (
+                  <FormItem><FormLabel>Escolaridade</FormLabel><FormControl><Input placeholder="Ex.: Ensino Médio completo" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="paiProfissao" render={({ field }) => (
+                  <FormItem><FormLabel>Profissão</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="paiCpf" render={({ field }) => (
+                  <FormItem><FormLabel>CPF</FormLabel><FormControl><Input placeholder="000.000.000-00" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="paiRg" render={({ field }) => (
+                  <FormItem><FormLabel>RG</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="paiTelefone" render={({ field }) => (
+                  <FormItem><FormLabel>Celular</FormLabel><FormControl><Input inputMode="tel" placeholder="(11) 99999-9999" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="paiEmail" render={({ field }) => (
+                  <FormItem><FormLabel>E-mail</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+              </div>
+            </section>
+
             {/* ================================ Cobrança ================================ */}
             <section className="space-y-4">
               <SectionTitle>Cobrança</SectionTitle>
@@ -548,7 +699,7 @@ export function PatientForm({ mode, trigger, onSuccess }: Props) {
                 Cancelar
               </Button>
               <Button type="submit" disabled={pending}>
-                {pending ? 'Salvando...' : isEdit ? 'Salvar' : 'Criar paciente'}
+                {pending ? 'Salvando...' : isEdit ? 'Salvar' : 'Criar cliente'}
               </Button>
             </DialogFooter>
           </form>

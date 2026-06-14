@@ -17,7 +17,7 @@ type NavItem = {
 const NAV: readonly NavItem[] = [
   { href: routes.dashboard, label: 'Dashboard', permission: 'dashboard.view' },
   { href: routes.agenda, label: 'Agenda', permission: 'appointments.view' },
-  { href: routes.pacientes, label: 'Pacientes', permission: 'patients.view' },
+  { href: routes.pacientes, label: 'Clientes', permission: 'patients.view' },
   { href: routes.financeiro, label: 'Financeiro', permission: 'financials.view' },
   { href: routes.acervo, label: 'Acervo Técnico', permission: 'inventory.view' },
   { href: routes.supervisao, label: 'Supervisão' },

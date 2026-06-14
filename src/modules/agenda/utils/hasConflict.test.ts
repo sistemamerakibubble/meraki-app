@@ -11,6 +11,7 @@ function base(overrides: Partial<Appointment>): Appointment {
     orgId: 'o',
     patientId: 'p',
     patientName: null,
+    title: null,
     professionalId: PROF_A,
     professionalName: null,
     roomId: null,
@@ -23,7 +24,9 @@ function base(overrides: Partial<Appointment>): Appointment {
     recurrenceGroupId: null,
     type: 'pacote',
     makeupForId: null,
+    makeupForDate: null,
     extraParticipant: null,
+    modality: null,
     ...overrides,
   };
 }

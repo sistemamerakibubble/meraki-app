@@ -10,7 +10,7 @@ import { searchPatients } from '@/modules/pacientes/queries/searchPatients';
 import { countPatients } from '@/modules/pacientes/queries/countPatients';
 import type { PatientStatus } from '@/modules/pacientes/types';
 
-export const metadata: Metadata = { title: 'Pacientes' };
+export const metadata: Metadata = { title: 'Clientes' };
 
 type SearchParams = Promise<{ q?: string; status?: string; page?: string }>;
 
@@ -34,9 +34,9 @@ export default async function PacientesPage({ searchParams }: { searchParams: Se
     <div className="space-y-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Prontuários e Pacientes</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">Clientes</h1>
           <p className="text-muted-foreground">
-            Gerencie e acompanhe as informações dos pacientes de forma eficiente
+            Gerencie e acompanhe as informações dos clientes de forma eficiente
           </p>
         </div>
         <PatientForm
@@ -44,7 +44,7 @@ export default async function PacientesPage({ searchParams }: { searchParams: Se
           trigger={
             <Button>
               <Plus className="mr-2 h-4 w-4" aria-hidden />
-              Novo Paciente
+              Novo Cliente
             </Button>
           }
         />
