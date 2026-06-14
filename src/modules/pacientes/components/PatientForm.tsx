@@ -113,7 +113,7 @@ function defaultValuesFor(mode: Mode): PatientInput {
       paiEmail: p.responsavelPai?.email ?? '',
     }) as PatientInput;
   }
-  return {
+  return ({
     fullName: '',
     birthdate: '',
     document: '',
@@ -138,7 +138,7 @@ function defaultValuesFor(mode: Mode): PatientInput {
     inicioPsicoterapia: '',
     maeName: '', maeNascimento: '', maeEscolaridade: '', maeProfissao: '', maeCpf: '', maeRg: '', maeTelefone: '', maeEmail: '',
     paiName: '', paiNascimento: '', paiEscolaridade: '', paiProfissao: '', paiCpf: '', paiRg: '', paiTelefone: '', paiEmail: '',
-  };
+  }) as PatientInput;
 }
 
 function packageAmountDisplayFor(mode: Mode): string {
