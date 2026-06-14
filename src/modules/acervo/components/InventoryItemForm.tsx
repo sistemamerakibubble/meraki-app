@@ -104,6 +104,7 @@ export function InventoryItemForm({ mode, trigger, open: controlledOpen, onOpenC
       toast.success(isEdit ? 'Item atualizado.' : 'Item criado.');
       setOpen(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, isEdit]);
 
   const onSubmit = form.handleSubmit((data) => {

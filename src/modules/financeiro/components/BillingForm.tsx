@@ -182,6 +182,7 @@ export function BillingForm({
       setOpen(false);
       onSuccess?.(state.data.id);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, isEdit, onSuccess]);
 
   const billingType = useWatch({ control: form.control, name: 'type' });

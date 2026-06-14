@@ -173,6 +173,7 @@ export function AppointmentForm({
       setOpen(false);
       onSuccess?.(state.data.id);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, isEdit, onSuccess]);
 
   const onSubmit = form.handleSubmit((data) => {
