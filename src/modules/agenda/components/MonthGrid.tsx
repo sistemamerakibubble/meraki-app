@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { format, isSameDay, isSameMonth, isToday } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 
 import { AppointmentDetail } from '@/modules/agenda/components/AppointmentDetail';
 import { cn } from '@/lib/utils/cn';

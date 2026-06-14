@@ -82,6 +82,7 @@ export async function createAppointmentAction(
     if (parsed.data.type === 'reposicao' && parsed.data.makeupForId) {
       await supabase
         .from('appointments')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .update({ status: 'reagendado' } as any)
         .eq('id', parsed.data.makeupForId);
     }

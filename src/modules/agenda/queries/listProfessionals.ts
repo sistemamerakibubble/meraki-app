@@ -13,6 +13,7 @@ export async function listProfessionals(): Promise<Professional[]> {
     .order('full_name', { ascending: true });
 
   // Filtra profissionais vinculados a perfis admin (ex: administração)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const filtered = (data ?? []).filter((p: any) => {
     const profile = Array.isArray(p.profiles) ? p.profiles[0] : p.profiles;
     return !profile || profile.role !== 'admin';

@@ -33,7 +33,9 @@ export async function listAppointmentsInRange({
 
   if (professionalId) query = query.eq('professional_id', professionalId);
   if (roomId) query = query.eq('room_id', roomId);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if (status) query = (query as any).eq('status', status);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if (modality) query = (query as any).eq('modality', modality);
 
   const { data, error } = await query;

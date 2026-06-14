@@ -53,7 +53,8 @@ export function AgendamentoTab({
   const [billingTo, setBillingTo] = useState('');
 
   // ── Configuração de recebimento do cliente ──────────
-  const da = patient.dadosAcademicos; // reuse patient for now — we store this in extended fields
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const da = patient.dadosAcademicos;
   const [editingConfig, setEditingConfig] = useState(false);
   const [savingConfig, setSavingConfig] = useState(false);
 
