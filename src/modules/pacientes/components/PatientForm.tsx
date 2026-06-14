@@ -72,7 +72,7 @@ function neuroToFormValue(v: boolean | null): '' | 'sim' | 'nao' {
 function defaultValuesFor(mode: Mode): PatientInput {
   if (mode.kind === 'edit') {
     const p = mode.patient;
-    return {
+    return ({
       fullName: p.fullName,
       birthdate: p.birthdate ?? '',
       document: p.document ?? '',
@@ -111,7 +111,7 @@ function defaultValuesFor(mode: Mode): PatientInput {
       paiRg: p.responsavelPai?.rg ?? '',
       paiTelefone: p.responsavelPai?.telefone ?? '',
       paiEmail: p.responsavelPai?.email ?? '',
-    };
+    }) as PatientInput;
   }
   return {
     fullName: '',
